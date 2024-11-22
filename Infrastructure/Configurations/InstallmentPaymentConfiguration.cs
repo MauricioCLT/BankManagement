@@ -10,11 +10,11 @@ public class InstallmentPaymentConfiguration : IEntityTypeConfiguration<Installm
     {
         entity.HasKey(x => x.Id);
 
-        entity.Property(x => x.PaymentAmount)
+        entity.Property(x => x.PaymentDate)
               .IsRequired();
 
         entity.Property(x => x.PaymentAmount)
-              .IsRequired();
+              .IsRequired(); 
 
         entity.Property(x => x.Status)
               .IsRequired();

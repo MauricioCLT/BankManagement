@@ -9,9 +9,7 @@
   <ItemGroup>
     <Folder Include="DTOs\" />
     <Folder Include="Interfaces\Repositories\" />
-    <Folder Include="Interfaces\Services\Auth\" />
     <Folder Include="Models\" />
-    <Folder Include="JWT\" />
     <Folder Include="Request\" />
   </ItemGroup>
 

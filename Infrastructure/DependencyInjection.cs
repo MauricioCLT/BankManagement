@@ -1,7 +1,16 @@
-﻿using Infrastructure.Context;
+﻿using Core.Interfaces.Services.Auth;
+using Core.JWT;
+using Infrastructure.Auth;
+using Infrastructure.Context;
+using Mapster;
+using MapsterMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
+using System.Text;
 
 namespace Infrastructure;
 
@@ -11,12 +20,42 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddAuth(configuration);
         services.AddDatabase(configuration);
+        services.AddMapping();
+        services.AddRepositories();
+        
+        return services;
+    }
+    
+    private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+    {
+        configuration.GetSection("JWT").Get<JwtOptions>();
 
+        services.AddAuthentication(x =>
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = configuration["JWT:Issuer"],
+                ValidateAudience = false,
+                ValidateIssuerSigningKey = true,
+                RequireExpirationTime = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]!))
+            };
+        });
+
+        services.AddTransient<JwtProvider>();
+        
         return services;
     }
 
-    public static IServiceCollection AddDatabase(this IServiceCollection service, IConfiguration configuration)
+    private static IServiceCollection AddDatabase(this IServiceCollection service, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("BankManagement");
 
@@ -26,5 +65,22 @@ public static class DependencyInjection
         });
 
         return service;
+    }
+
+    private static IServiceCollection AddMapping(this IServiceCollection services)
+    {
+        var config = TypeAdapterConfig.GlobalSettings;
+        config.Scan(Assembly.GetExecutingAssembly());
+
+        services.AddSingleton(config);
+        services.AddScoped<IMapper, ServiceMapper>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IJwtProvider, JwtProvider>();
+        return services;
     }
 }
