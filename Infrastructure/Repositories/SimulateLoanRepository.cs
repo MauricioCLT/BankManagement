@@ -17,7 +17,6 @@ public class SimulateLoanRepository : ISimulateLoanRepository
 
     public async Task<LoanSimulateResponse> SimulateLoan(decimal amount, ushort months)
     {
-        // Calcular los prestamos
         var termInterestRate = await _context.TermInterestRates.FirstOrDefaultAsync(x => x.Months == months);
 
         if (termInterestRate == null)

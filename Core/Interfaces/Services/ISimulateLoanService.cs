@@ -1,4 +1,5 @@
-﻿using Core.DTOs.SimulateLoan;
+﻿using Core.DTOs.RequestLoan;
+using Core.DTOs.SimulateLoan;
 
 namespace Core.Interfaces.Services;
 
@@ -10,7 +11,7 @@ Monto: Importe que desea solicitar.
 Plazo: Número de meses.
 */
 
-public interface ILoanService
+public interface ISimulateLoanService
 {
     public Task<LoanSimulateResponse> SimulateCredit(LoanSimulate loanSimulate);
 }

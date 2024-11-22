@@ -4,7 +4,7 @@ using Core.Interfaces.Services;
 
 namespace Infrastructure.Services;
 
-public class SimulateLoanService : ILoanService
+public class SimulateLoanService : ISimulateLoanService
 { 
     private readonly ISimulateLoanRepository _simulateLoanRepository;
 

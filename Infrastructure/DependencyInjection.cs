@@ -1,11 +1,14 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.DTOs.SimulateLoan;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Interfaces.Services.Auth;
 using Core.JWT;
+using FluentValidation;
 using Infrastructure.Auth;
 using Infrastructure.Context;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Infrastructure.Validation.Loan;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,10 +31,11 @@ public static class DependencyInjection
         services.AddDatabase(configuration);
         services.AddMapping();
         services.AddRepositories();
-        
+        services.AddValidations();
+
         return services;
     }
-    
+
     private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
         configuration.GetSection("JWT").Get<JwtOptions>();
@@ -55,7 +59,7 @@ public static class DependencyInjection
         });
 
         services.AddTransient<JwtProvider>();
-        
+
         return services;
     }
 
@@ -81,12 +85,22 @@ public static class DependencyInjection
 
         return services;
     }
-    
+
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<ISimulateLoanRepository, SimulateLoanRepository>();
-        services.AddScoped<ILoanService, SimulateLoanService>();
+        services.AddScoped<ISimulateLoanService, SimulateLoanService>();
+        services.AddScoped<IBankService, BankService>();
+        services.AddScoped<IRequestLoanRepository, RequestLoanRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddValidations(this IServiceCollection services)
+    {
+        services.AddScoped<IValidator<RequestLoan>, RequestLoanValidation>();
+        services.AddScoped<IValidator<LoanSimulate>, LoanSimulateValidation>();
 
         return services;
     }

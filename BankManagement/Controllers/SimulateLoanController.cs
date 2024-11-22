@@ -6,21 +6,16 @@ namespace BankManagement.Controllers;
 
 public class SimulateLoanController : BaseApiController
 {
-    private readonly ILoanService _loanService;
+    private readonly ISimulateLoanService _loanService;
 
-    public SimulateLoanController(ILoanService loanService)
+    public SimulateLoanController(ISimulateLoanService loanService)
     {
         _loanService = loanService;
     }
 
-    [HttpPost("Simulate-Credit")]
+    [HttpPost("Simulate")]
     public async Task<IActionResult> SimulateCredit([FromBody] LoanSimulate loanSimulate)
-    {
-        var simulate = await _loanService.SimulateCredit(loanSimulate);
-
-        if (simulate == null)
-            throw new Exception("");
-        
-        return Ok(simulate);
+    {       
+        return Ok(await _loanService.SimulateCredit(loanSimulate));
     }
 }
