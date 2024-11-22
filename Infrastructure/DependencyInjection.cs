@@ -1,7 +1,11 @@
-﻿using Core.Interfaces.Services.Auth;
+﻿using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
+using Core.Interfaces.Services.Auth;
 using Core.JWT;
 using Infrastructure.Auth;
 using Infrastructure.Context;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -81,6 +85,9 @@ public static class DependencyInjection
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddScoped<ISimulateLoanRepository, SimulateLoanRepository>();
+        services.AddScoped<ILoanService, SimulateLoanService>();
+
         return services;
     }
 }

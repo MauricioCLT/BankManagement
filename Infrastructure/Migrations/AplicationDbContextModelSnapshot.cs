@@ -221,19 +221,19 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.Customer", "Customer")
                         .WithMany("ApprovedLoans")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Core.Entities.LoanRequest", "LoanRequest")
                         .WithOne("ApprovedLoan")
                         .HasForeignKey("Core.Entities.ApprovedLoan", "LoanRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Core.Entities.TermInterestRate", "TermInterestRate")
                         .WithMany()
                         .HasForeignKey("TermInterestRateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -248,7 +248,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.ApprovedLoan", "ApprovedLoan")
                         .WithMany("Installments")
                         .HasForeignKey("ApprovedLoanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ApprovedLoan");
@@ -259,7 +259,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.Installment", "Installment")
                         .WithOne("InstallmentPayment")
                         .HasForeignKey("Core.Entities.InstallmentPayment", "InstallmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Installment");
@@ -270,13 +270,13 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.Customer", "Customer")
                         .WithMany("LoanRequests")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Core.Entities.TermInterestRate", "TermInterestRate")
                         .WithMany("LoanRequests")
                         .HasForeignKey("TermInterestRateId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");

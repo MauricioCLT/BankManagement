@@ -64,13 +64,13 @@ namespace Infrastructure.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_LoanRequests_TermInterestRates_TermInterestRateId",
                         column: x => x.TermInterestRateId,
                         principalTable: "TermInterestRates",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,19 +95,19 @@ namespace Infrastructure.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ApprovedLoans_LoanRequests_LoanRequestId",
                         column: x => x.LoanRequestId,
                         principalTable: "LoanRequests",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ApprovedLoans_TermInterestRates_TermInterestRateId",
                         column: x => x.TermInterestRateId,
                         principalTable: "TermInterestRates",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -131,7 +131,7 @@ namespace Infrastructure.Migrations
                         column: x => x.ApprovedLoanId,
                         principalTable: "ApprovedLoans",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -153,7 +153,7 @@ namespace Infrastructure.Migrations
                         column: x => x.InstallmentId,
                         principalTable: "Installments",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
