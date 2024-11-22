@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Mapping\" />
-    <Folder Include="Auth\" />
-    <Folder Include="AuthConfiguration\" />
     <Folder Include="Validation\" />
     <Folder Include="Services\" />
     <Folder Include="Repositories\" />
