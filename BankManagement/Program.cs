@@ -1,3 +1,4 @@
+using BankManagement.Middlewares;
 using Infrastructure;
 using Microsoft.OpenApi.Models;
 
@@ -48,6 +49,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseAuthorization();
 

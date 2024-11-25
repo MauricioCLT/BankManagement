@@ -56,7 +56,7 @@
   "loanType": "Hipotecario",
   "months": 6,
   "amount": 1000000,
-  "requestDate": "2024-11-25T02:25:29.7848118Z",
+  "requestDate": "2024-11-25",
   "status": "Pending"
 }
 ```
@@ -76,27 +76,88 @@
 
 }
 ```
+`POST` `/api/Bank/Reject-Loan`
+```json
+{
 
-Implementar un flujo de aprobación/rechazo para las solicitudes de préstamo, accesible únicamente por usuarios con un rol autorizado. El sistema debe permitir:
-- **Rechazo**: Cambiar el estado de la solicitud a "Rechazada".
-- **Aprobación**:
-  - Cambiar el estado de la solicitud.
-  - Guardar los datos relevantes en una entidad de "Préstamos Aprobados", incluyendo:
-    - Cliente.
-    - Fecha de aprobación.
-    - Monto solicitado.
-    - Plazo.
-    - Tipo de préstamo.
-    - Tasa de interés.
-  - Generar automáticamente las cuotas correspondientes, guardando:
-    - Monto total de la cuota.
-    - Monto del capital correspondiente.
-    - Monto del interés correspondiente.
-    - Fecha de vencimiento (el día 1 de cada mes, comenzando desde el mes siguiente de su aprobación).
+}
+```
 
-#### **Requisitos Técnicos:**
- - Solicitudes y Préstamos se guardan en tablas diferentes.
- - Si la solicitud es "Rechazada", validar que se establezca un motivo de forma obligatoria.
+`Response`
+```json
+{
+
+}
+```
+
+
+## `5. Consulta de Detalles de un Préstamo`
+
+`GET` `/api/Bank/{loanRequestId}/Details`
+
+`Response`
+```json
+{
+  "customerId": 1,
+  "customerName": "Camey Aland",
+  "approvedDate": "2024-11-25T15:52:25.656532Z",
+  "requestedAmount": 10360000,
+  "totalAmount": 11307940,
+  "revenue": 947940,
+  "months": 6,
+  "loanType": "Hipotecario",
+  "interestRate": 9.15,
+  "completePayments": 0,
+  "uncompletePayments": 0,
+  "nextDueDate": null,
+  "paymentStatus": "All payments completed"
+}
+```
+
+## `6. Pago de Cuotas`
+`POST` `api/Bank/{loanRequestId}/Pay-Installment`
+```json
+{
+  "loanRequestId": 0,
+  "installmentIds": [
+    0
+  ]
+}
+```
+
+`Response`
+```json
+{
+
+}
+```
+
+## `7. Listado de Cuotas`
+Enpoint para listar las cuotas de un préstamo. Permitir filtrar por:
+- Todas las cuotas.
+- Cuotas pagadas.
+- Cuotas pendientes por pagar.
+
+`Response`
+```json
+{
+
+}
+```
+
+## `8. Listado de Cuotas Atrasadas`
+Listar todas las cuotas atrasadas, mostrando:
+- Cliente asociado.
+- Fecha de vencimiento de la cuota.
+- Días de atraso.
+- Monto pendiente.
+
+`Response`
+```json
+{
+
+}
+```
 
 ---
 

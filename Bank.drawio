@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.17 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.17">
   <diagram id="3MsDFhCpPPug5Z4EoW6w" name="Página-1">
-    <mxGraphModel dx="1669" dy="478" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FCFCFC" math="0" shadow="1">
+    <mxGraphModel dx="2245" dy="697" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FCFCFC" math="0" shadow="1">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -126,15 +126,15 @@
             <mxRectangle width="220" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ypKWcNt-lFt8h2dKR2f8-5" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" vertex="1" parent="gIX4ZdvpRPkXEoyVLq0K-1">
+        <mxCell id="ypKWcNt-lFt8h2dKR2f8-5" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" parent="gIX4ZdvpRPkXEoyVLq0K-1" vertex="1">
           <mxGeometry y="300" width="300" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="ypKWcNt-lFt8h2dKR2f8-6" value="string" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" vertex="1" parent="ypKWcNt-lFt8h2dKR2f8-5">
+        <mxCell id="ypKWcNt-lFt8h2dKR2f8-6" value="string" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" parent="ypKWcNt-lFt8h2dKR2f8-5" vertex="1">
           <mxGeometry width="80" height="30" as="geometry">
             <mxRectangle width="80" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ypKWcNt-lFt8h2dKR2f8-7" value="Rol" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" vertex="1" parent="ypKWcNt-lFt8h2dKR2f8-5">
+        <mxCell id="ypKWcNt-lFt8h2dKR2f8-7" value="Rol" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" parent="ypKWcNt-lFt8h2dKR2f8-5" vertex="1">
           <mxGeometry x="80" width="220" height="30" as="geometry">
             <mxRectangle width="220" height="30" as="alternateBounds" />
           </mxGeometry>
@@ -437,15 +437,15 @@
             <mxRectangle width="220" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ypKWcNt-lFt8h2dKR2f8-2" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" vertex="1" parent="gIX4ZdvpRPkXEoyVLq0K-127">
+        <mxCell id="ypKWcNt-lFt8h2dKR2f8-2" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" parent="gIX4ZdvpRPkXEoyVLq0K-127" vertex="1">
           <mxGeometry y="180" width="300" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="ypKWcNt-lFt8h2dKR2f8-3" value="ushort" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" vertex="1" parent="ypKWcNt-lFt8h2dKR2f8-2">
+        <mxCell id="ypKWcNt-lFt8h2dKR2f8-3" value="ushort" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" parent="ypKWcNt-lFt8h2dKR2f8-2" vertex="1">
           <mxGeometry width="80" height="30" as="geometry">
             <mxRectangle width="80" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ypKWcNt-lFt8h2dKR2f8-4" value="Months" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" vertex="1" parent="ypKWcNt-lFt8h2dKR2f8-2">
+        <mxCell id="ypKWcNt-lFt8h2dKR2f8-4" value="Months" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;whiteSpace=wrap;html=1;fontFamily=Hack Nerd Font;labelBackgroundColor=none;rounded=1;strokeColor=#D0CEE2;fontColor=#1A1A1A;" parent="ypKWcNt-lFt8h2dKR2f8-2" vertex="1">
           <mxGeometry x="80" width="220" height="30" as="geometry">
             <mxRectangle width="220" height="30" as="alternateBounds" />
           </mxGeometry>
