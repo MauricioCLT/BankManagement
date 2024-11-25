@@ -19,7 +19,7 @@ public class AplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new ApprovedLoansConfiguration());
+        modelBuilder.ApplyConfiguration(new ApprovedLoanConfiguration());
         modelBuilder.ApplyConfiguration(new CustomerConfiguration());
         modelBuilder.ApplyConfiguration(new InstallmentConfiguration());
         modelBuilder.ApplyConfiguration(new InstallmentPaymentConfiguration());

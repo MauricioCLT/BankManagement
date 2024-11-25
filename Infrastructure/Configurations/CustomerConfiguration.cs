@@ -10,29 +10,23 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
     {
         entity.HasKey(x => x.Id);
 
-        entity
-            .Property(x => x.FirstName)
-            .IsRequired();
+        entity.Property(x => x.FirstName)
+              .IsRequired();
 
-        entity
-            .Property(x => x.LastName)
-            .IsRequired();
+        entity.Property(x => x.LastName)
+              .IsRequired();
 
-        entity
-            .Property(x => x.Cid)
-            .IsRequired();
+        entity.HasIndex(x => x.Cid)
+              .IsUnique();
 
-        entity
-            .Property(x => x.Email)
-            .IsRequired();
+        entity.Property(x => x.Email)
+              .IsRequired();
 
-        entity
-            .Property(x => x.Phone)
-            .IsRequired();
+        entity.Property(x => x.Phone)
+              .IsRequired();
 
-        entity
-            .Property(x => x.Address)
-            .IsRequired();
+        entity.Property(x => x.Address)
+              .IsRequired();
 
         entity.HasMany(x => x.ApprovedLoans)
               .WithOne(x => x.Customer)

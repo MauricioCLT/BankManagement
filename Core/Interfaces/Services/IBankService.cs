@@ -4,5 +4,5 @@ namespace Core.Interfaces.Services;
 
 public interface IBankService
 {
-    public Task<RequestLoanResponse> CreateRequestLoan(RequestLoan requestLoan);
+    public Task<RequestLoanResponse> CreateRequestLoan(RequestLoanDTO requestLoan);
 }
