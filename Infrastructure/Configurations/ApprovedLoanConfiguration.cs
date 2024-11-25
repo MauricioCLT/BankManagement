@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations;
 
-public class ApprovedLoansConfiguration : IEntityTypeConfiguration<ApprovedLoan>
+public class ApprovedLoanConfiguration : IEntityTypeConfiguration<ApprovedLoan>
 {
     public void Configure(EntityTypeBuilder<ApprovedLoan> entity)
     {
@@ -13,7 +13,7 @@ public class ApprovedLoansConfiguration : IEntityTypeConfiguration<ApprovedLoan>
         entity.Property(x => x.ApprovalDate)
               .IsRequired();
 
-        entity.Property(x => x.RequestAmount)
+        entity.Property(x => x.RequestedAmount)
               .IsRequired();
 
         entity.Property(x => x.InterestRate)
@@ -29,5 +29,9 @@ public class ApprovedLoansConfiguration : IEntityTypeConfiguration<ApprovedLoan>
         entity.HasOne(x => x.Customer)
               .WithMany(x => x.ApprovedLoans)
               .HasForeignKey(x => x.CustomerId);
+
+        entity.HasMany(x => x.Installments)
+              .WithOne(x => x.ApprovedLoan)
+              .HasForeignKey(x => x.ApprovedLoanId);
     }
 }

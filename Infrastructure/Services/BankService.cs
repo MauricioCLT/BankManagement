@@ -14,7 +14,7 @@ public class BankService : IBankService
         _requestLoanRepository = requestLoanRepository;
     }
 
-    public async Task<RequestLoanResponse> CreateRequestLoan(RequestLoan requestLoan)
+    public async Task<RequestLoanResponse> CreateRequestLoan(RequestLoanDTO requestLoan)
     {
         if (requestLoan.AmountRequest <= 0)
             throw new Exception("El monto deber ser mayor a 0.");

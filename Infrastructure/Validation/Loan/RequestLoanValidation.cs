@@ -1,8 +1,9 @@
-﻿using FluentValidation;
+﻿using Core.DTOs.RequestLoan;
+using FluentValidation;
 
 namespace Infrastructure.Validation.Loan;
 
-public class RequestLoanValidation : AbstractValidator<RequestLoan>
+public class RequestLoanValidation : AbstractValidator<RequestLoanDTO>
 {
     private static readonly IReadOnlyList<string> ValidTypes = new List<string>()
     {

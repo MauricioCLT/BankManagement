@@ -1,4 +1,5 @@
-﻿using Core.Interfaces.Services;
+﻿using Core.DTOs.RequestLoan;
+using Core.Interfaces.Services;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ public class BankController : BaseApiController
     }
 
     [HttpPost("Request-Loan")]
-    public async Task<IActionResult> CreateRequestLoan([FromBody] RequestLoan requestLoan)
+    public async Task<IActionResult> CreateRequestLoan([FromBody] RequestLoanDTO requestLoan)
     {
         return Ok(await _bankService.CreateRequestLoan(requestLoan));
     }

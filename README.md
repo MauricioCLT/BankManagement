@@ -2,20 +2,18 @@
 
 ---
 
-![Imágen de las Entidades](./img/Bank.jpg)
+![Imágen de las Entidades](./img/BankFixed.jpg)
 
 ## Diagrama Entidad Relación
-![ER Diagram](./img/ERBank.png)
+![ER Diagram](./img/ERBankFixed.png)
 
 ---
 
-## Requerimientos del Sistema
-- [x] 
-# 1. `Creación de la Entidad "Plazo y Tasa de Interés`
+# Requerimientos del Sistema
+## 1. `Creación de la Entidad "Plazo y Tasa de Interés`
 
 
-- [x] 
-# 2. `Simulador de Cuota`
+## 2. `Simulador de Cuota`
 
 `POST` `/api/SimulateLoan/Simulate-Credit`
 
@@ -37,16 +35,15 @@
 
 ---
 
-- [x] 
-# 3. `Solicitud de Préstamo`
+## 3. `Solicitud de Préstamo`
 
 `POST` `/api/Bank/Request-Loan`
 ```json
 {
   "customerId": 1,
-  "loanType": "Personal",
+  "loanType": "Hipotecario",
   "months": 6,
-  "amountRequest": 150000,
+  "amountRequest": 1000000
 }
 ```
 
@@ -54,58 +51,53 @@
 
 ```json
 {
-  "loanType": "Personal",
+  "customerId": 1,
+  "loanRequestId": 12,
+  "loanType": "Hipotecario",
   "months": 6,
-  "amountRequest": 150000,
+  "amount": 1000000,
+  "requestDate": "2024-11-25T02:25:29.7848118Z",
+  "status": "Pending"
 }
 ```
 
+## `4. Aprobación/Rechazo de Solicitudes`
 
-
-- Crear una funcionalidad que permita a los clientes registrar solicitudes de préstamo, donde puedan seleccionar:
-  1. Tipo de Préstamo: Personal, hipotecario, automotriz, etc.
-  2. Plazo: En meses.
-  3. Monto: Cantidad solicitada.
-
-- Requisitos Técnicos:
-  1. Validar que el plazo ingresado sea un valor existente.
-  2. Almacenar la solicitud en una tabla en la base de datos.
-  3. Definir un estado inicial para la solicitud, como "Pendiente de Aprobación".
-
-<span style="color: red">TODO:</span>
-Fix this part add new colum into `LoanRequests`
-```cs
-public async Task<RequestLoanResponse> CreateRequestLoan(RequestLoan requestLoan)
+`POST` `/api/Bank/Approve-Loan`
+```json
 {
-    var termInterstRate = await _context.TermInterestRates.FirstOrDefaultAsync(x => x.Months == requestLoan.Months);
 
-    if (termInterstRate == null)
-        throw new Exception("El plazo ingresado no es valido!");
-
-    var loanRequest = new LoanRequest
-    {
-        CustomerId = requestLoan.CustomerId,
-        LoanType = requestLoan.LoanType,
-        // Months = requestLoan.Months,
-        Amount = requestLoan.AmountRequest,
-        Status = "Pending",
-        TermInterestRateId = termInterstRate.Id
-    };
-
-    // var loanRequestAdap = requestLoan.Adapt<LoanRequest>();
-
-    _context.LoanRequests.Add(loanRequest);
-    await _context.SaveChangesAsync();
-
-    var requestLoanResponse = new RequestLoanResponse
-    {
-        CustomerId = loanRequest.CustomerId,
-        LoanType = loanRequest.LoanType,
-        Amount = loanRequest.Amount,
-        // Months = loanRequest,
-        Status = requestLoan.Status
-    };
-
-    return requestLoanResponse;
-
+}
 ```
+
+`Response`
+```json
+{
+
+}
+```
+
+Implementar un flujo de aprobación/rechazo para las solicitudes de préstamo, accesible únicamente por usuarios con un rol autorizado. El sistema debe permitir:
+- **Rechazo**: Cambiar el estado de la solicitud a "Rechazada".
+- **Aprobación**:
+  - Cambiar el estado de la solicitud.
+  - Guardar los datos relevantes en una entidad de "Préstamos Aprobados", incluyendo:
+    - Cliente.
+    - Fecha de aprobación.
+    - Monto solicitado.
+    - Plazo.
+    - Tipo de préstamo.
+    - Tasa de interés.
+  - Generar automáticamente las cuotas correspondientes, guardando:
+    - Monto total de la cuota.
+    - Monto del capital correspondiente.
+    - Monto del interés correspondiente.
+    - Fecha de vencimiento (el día 1 de cada mes, comenzando desde el mes siguiente de su aprobación).
+
+#### **Requisitos Técnicos:**
+ - Solicitudes y Préstamos se guardan en tablas diferentes.
+ - Si la solicitud es "Rechazada", validar que se establezca un motivo de forma obligatoria.
+
+---
+
+# Entidades de la Base de Datos

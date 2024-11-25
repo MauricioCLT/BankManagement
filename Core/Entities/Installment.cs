@@ -11,5 +11,5 @@ public class Installment
 
     public int ApprovedLoanId { get; set; }
     public ApprovedLoan ApprovedLoan { get; set; } = null!;
-    public InstallmentPayment InstallmentPayment { get; set; } = null!;
+    public List<InstallmentPayment> InstallmentPayments { get; set; } = [];
 }
