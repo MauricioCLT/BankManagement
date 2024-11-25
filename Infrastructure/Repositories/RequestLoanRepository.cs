@@ -16,37 +16,26 @@ public class RequestLoanRepository : IRequestLoanRepository
         _context = context;
     }
 
-    public async Task<RequestLoanResponse> CreateRequestLoan(RequestLoan requestLoan)
+    public async Task<RequestLoanResponse> CreateRequestLoan(RequestLoanDTO requestLoanDTO)
     {
-        var termInterstRate = await _context.TermInterestRates.FirstOrDefaultAsync(x => x.Months == requestLoan.Months);
+        var termInterstRate = await _context.TermInterestRates.FirstOrDefaultAsync(x => x.Months == requestLoanDTO.Months);
 
         if (termInterstRate == null)
             throw new Exception("El plazo ingresado no es valido!");
 
         var loanRequest = new LoanRequest
         {
-            CustomerId = requestLoan.CustomerId,
-            LoanType = requestLoan.LoanType,
-            // Months = requestLoan.Months,
-            Amount = requestLoan.AmountRequest,
-            Status = "Pending",
-            TermInterestRateId = termInterstRate.Id
+            CustomerId = requestLoanDTO.CustomerId,
+            LoanType = requestLoanDTO.LoanType,
+            Months = requestLoanDTO.Months,
+            Amount = requestLoanDTO.AmountRequest,
+            TermInterestRateId = termInterstRate.Id,
+            RequestDate = DateTime.UtcNow,
         };
-
-        // var loanRequestAdap = requestLoan.Adapt<LoanRequest>();
 
         _context.LoanRequests.Add(loanRequest);
         await _context.SaveChangesAsync();
 
-        var requestLoanResponse = new RequestLoanResponse
-        {
-            CustomerId = loanRequest.CustomerId,
-            LoanType = loanRequest.LoanType,
-            Amount = loanRequest.Amount,
-            // Months = loanRequest,
-            Status = requestLoan.Status
-        };
-
-        return requestLoanResponse;
+        return loanRequest.Adapt<RequestLoanResponse>();
     }
 }

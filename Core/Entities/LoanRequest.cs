@@ -3,13 +3,15 @@
 public class LoanRequest
 {
     public int Id { get; set; }
-    public int CustomerId { get; set; }
-    public int TermInterestRateId { get; set; }
-    public string LoanType { get; set; } = string.Empty;
     public decimal Amount { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public string LoanType { get; set; } = string.Empty;
+    public ushort Months { get; set; }
+    public DateTime RequestDate { get; set; }
+    public string Status { get; set; } = "Pending";
 
-    public Customer Customer { get; set; } = null!;
     public ApprovedLoan ApprovedLoan { get; set; } = null!;
+    public int CustomerId { get; set; }
+    public Customer Customer { get; set; } = null!;
+    public int TermInterestRateId { get; set; }
     public TermInterestRate TermInterestRate { get; set; } = null!;
 }
