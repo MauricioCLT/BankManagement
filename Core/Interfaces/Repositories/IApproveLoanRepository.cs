@@ -5,6 +5,8 @@ namespace Core.Interfaces.Repositories;
 
 public interface IApproveLoanRepository
 {
-    public Task<ApproveLoanResponse> ApproveLoanRequest(ApproveLoanDTO approveLoanDTO);
-    public Task<RejectLoanResponse> RejectLoanRequest(RejectLoanDTO rejectLoanDTO);
+    // public Task<ApproveLoanResponse> ApproveLoanRequest(ApproveLoanDTO approveLoanDTO);
+    // public Task<RejectLoanResponse> RejectLoanRequest(RejectLoanDTO rejectLoanDTO);
+    public Task SaveApprovedLoan (ApprovedLoan approvedLoan, List<Installment> installments);
+    public Task SaveRejectedLoan(ApprovedLoan rejectedLoan);
 }

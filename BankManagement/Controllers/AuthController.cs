@@ -14,32 +14,4 @@ public class AuthController(IJwtProvider jwtProvider) : BaseApiController
     {
         return Ok(_jwtProvider.GenerateToken(id, name, roles));
     }
-    
-    [HttpGet("Protected-Endpoint")]
-    [Authorize]
-    public IActionResult ProtectedEndpoint()
-    {
-        return Ok("Esto es un endpoint protegido");
-    }
-    
-    [HttpGet("Protected-Endpoint-Seguridad")]
-    [Authorize(Roles = "Seguridad")]
-    public IActionResult ProtectedSecurityRol()
-    {
-        return Ok("Acceso solo a miembros con rol de seguridad");
-    }
-    
-    [HttpGet("Protected-Endpoint-Admin")]
-    [Authorize(Roles = "Admin")]
-    public IActionResult ProtectedAdminRol()
-    {
-        return Ok("Acceso solo a miembros con rol de Admin");
-    }
-    
-    [HttpGet("Protected-Endpoint-Ambos")]
-    [Authorize(Roles = "Admin,Seguridad")]
-    public IActionResult ProtectedBothRol()
-    {
-        return Ok("Acceso a miebros con roles de Seguridad y Admin");
-    }
 }

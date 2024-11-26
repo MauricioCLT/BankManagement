@@ -1,13 +1,71 @@
 # BankManagement
 
----
 
-![Imágen de las Entidades](./img/BankFixed.jpg)
+## Ejecución del proyecto
+### 1. Clonar el repositorio
+```sh
+git clone https://github.com/MauricioCLT/BankManagement.git && cd BankManagement
+```
 
-## Diagrama Entidad Relación
-![ER Diagram](./img/ERBankFixed.png)
+### 2. Crear un nuevo volumen de docker
+`CMD`
+```sh
+docker container run ^
+-dp 5432:5432 ^
+--name postgres-bootcamp-prueba ^
+-e POSTGRES_PASSWORD=123456 ^
+-v postgres-bootcamp-prueba:/var/lib/postgresql/data ^
+postgres:15.1
+```
 
----
+`POWERSHELL`
+```ps1
+docker container run \
+-dp 5432:5432 \
+--name postgres-bootcamp-prueba \
+-e POSTGRES_PASSWORD=123456 \
+-v postgres-bootcamp-prueba:/var/lib/postgresql/data \
+postgres:15.1
+```
+
+### 3. Verificar en el connection string que todo este correcto.
+```json
+"ConnectionStrings": {
+  "BankManagement": "Host=localhost; Database=bank; Username=postgres; Password=123456"
+},
+```
+
+### 4. Aplicar las migraciones a la base de datos
+```ps1
+dotnet ef database update -p Infrastructure -s BankManagement
+```
+
+### 5. Datos para la prueba
+`Customers`
+```sql
+insert into customers (id, name, email, phone, address, city, state, zipcode, country, credit_limit) 
+values (1, 'Camey Aland', 'camery@aland.com', '555-555-5555', '123 Main Street', 'New York', 'NY', '10001', 'USA', 10000);
+```
+
+`TermInterestRates`
+```sql
+insert into term_interest_rates (rate, months)
+values (9.15, 6)
+values (12.5, 12)
+values (15.0, 24)
+values (18.0, 36)
+values (21.0, 48);
+```
+
+### 5. Ejecución del proyecto
+#### 5.1 Modo Debug
+```ps1
+cd BankManagement && dotnet run
+```
+#### 5.2 Modo Release
+```ps1
+cd BankManagement && dotnet -c Release && dotnet run
+```
 
 # Requerimientos del Sistema
 ## 1. `Creación de la Entidad "Plazo y Tasa de Interés`
@@ -162,3 +220,8 @@ Listar todas las cuotas atrasadas, mostrando:
 ---
 
 # Entidades de la Base de Datos
+
+![Imágen de las Entidades](./img/BankFixed.jpg)
+
+## Diagrama Entidad Relación
+![ER Diagram](./img/ERBankFixed.png)

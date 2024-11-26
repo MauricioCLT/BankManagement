@@ -17,26 +17,28 @@ namespace Infrastructure.Repositories
         public async Task<PaymentDetailResponse> GetLoanDetails(int loanRequestId)
         {
             var loanRequest = await _context.LoanRequests
-                .Include(lr => lr.Customer)
-                .Include(lr => lr.TermInterestRate)
-                .Include(lr => lr.ApprovedLoan)
-                .ThenInclude(al => al.Installments)
-                .ThenInclude(i => i.InstallmentPayments)
-                .FirstOrDefaultAsync(lr => lr.Id == loanRequestId);
+                .Include(x => x.Customer)
+                .Include(x => x.TermInterestRate)
+                .Include(x => x.ApprovedLoan)
+                .ThenInclude(x => x.Installments)
+                .ThenInclude(x => x.InstallmentPayments)
+                .FirstOrDefaultAsync(x => x.Id == loanRequestId);
 
             if (loanRequest == null)
                 throw new Exception("Loan request not found.");
 
             var totalAmount = loanRequest.Amount + loanRequest.Amount * (decimal)loanRequest.TermInterestRate.Interest / 100;
             var revenue = totalAmount - loanRequest.Amount;
+
             var completePayments = loanRequest.ApprovedLoan.Installments
-                .Sum(i => i.InstallmentPayments.Count(p => p.Status == "Completed"));
+                .Sum(x => x.InstallmentPayments.Count(p => p.Status == "Completed"));
+
             var uncompletePayments = loanRequest.ApprovedLoan.Installments
-                .Sum(i => i.InstallmentPayments.Count(p => p.Status == "Pending"));
+                .Sum(x => x.InstallmentPayments.Count(p => p.Status == "Pending"));
 
             var nextDueDate = loanRequest.ApprovedLoan.Installments
-                .Where(i => i.Status == "Pending")
-                .OrderBy(i => i.DueDate)
+                .Where(x => x.Status == "Pending")
+                .OrderBy(x => x.DueDate)
                 .FirstOrDefault()?.DueDate;
 
             return new PaymentDetailResponse

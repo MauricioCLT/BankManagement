@@ -14,22 +14,23 @@ public class LoanPaymentRepository : ILoanPaymentRepository
         _context = context;
     }
 
-    public async Task<PayInstallmentsResponse> PayInstallments(PayInstallmentsRequest request)
+    public async Task<PayInstallmentsResponse> PayInstallments(PayInstallmentsRequest payInstallmentsRequest)
     {
         var loanRequest = await _context.LoanRequests
-                .Include(lr => lr.ApprovedLoan)
-                .ThenInclude(al => al.Installments)
-                .FirstOrDefaultAsync(lr => lr.Id == request.LoanRequestId);
+                .Include(x => x.ApprovedLoan)
+                .ThenInclude(x => x.Installments)
+                .FirstOrDefaultAsync(x => x.Id == payInstallmentsRequest.LoanRequestId);
 
         if (loanRequest == null)
             throw new Exception("Loan request not found.");
 
         // Validar cuotas disponibles
         var installments = await _context.Installments
-            .Where(i => request.InstallmentIds.Contains(i.Id) && i.ApprovedLoanId == loanRequest.ApprovedLoan.Id && i.Status != "Paid")
-            .ToListAsync();
+            .Where(x => payInstallmentsRequest.InstallmentIds.Contains(x.Id) 
+                   && x.ApprovedLoanId == loanRequest.ApprovedLoan.Id 
+                   && x.Status != "Paid").ToListAsync();
 
-        if (installments.Count != request.InstallmentIds.Count)
+        if (installments.Count != payInstallmentsRequest.InstallmentIds.Count)
             throw new Exception("Some installments are already paid or not part of the loan.");
 
         foreach (var installment in installments)
@@ -40,7 +41,7 @@ public class LoanPaymentRepository : ILoanPaymentRepository
 
         await _context.SaveChangesAsync();
 
-        var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(i => i.Status != "Paid");
+        var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status != "Paid");
 
         return new PayInstallmentsResponse
         {

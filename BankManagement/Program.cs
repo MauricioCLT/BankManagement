@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSwaggerGen(options => 
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "BankManagement", Version = "v1" });
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,

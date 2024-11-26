@@ -12,4 +12,6 @@ public interface IBankService
     public Task<RejectLoanResponse> RejectLoanRequest(RejectLoanDTO rejectLoanDTO);
     public Task<PaymentDetailResponse> GetLoanDetails(int loanRequestId);
     public Task<PayInstallmentsResponse> PayInstallments(PayInstallmentsRequest request);
+
+    public List<Installment> CalculateInstallments(decimal amount, float interestRate, ushort months);
 }

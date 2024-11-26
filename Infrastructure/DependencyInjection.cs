@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddDatabase(configuration);
         services.AddMapping();
         services.AddRepositories();
+        services.AddServices();
         services.AddValidations();
 
         return services;
@@ -91,12 +92,18 @@ public static class DependencyInjection
     {
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<ISimulateLoanRepository, SimulateLoanRepository>();
-        services.AddScoped<ISimulateLoanService, SimulateLoanService>();
-        services.AddScoped<IBankService, BankService>();
-        services.AddScoped<IRequestLoanRepository, RequestLoanRepository>();
+        services.AddScoped<ILoanRequestRepository, LoanRequestRepository>();
         services.AddScoped<IApproveLoanRepository, ApproveLoanRepository>();
         services.AddScoped<IApproveLoanDetailRepository, DetailedPaymentRepository>();
         services.AddScoped<ILoanPaymentRepository, LoanPaymentRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IBankService, BankService>();
+        services.AddScoped<ISimulateLoanService, SimulateLoanService>();
 
         return services;
     }

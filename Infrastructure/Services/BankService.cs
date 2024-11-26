@@ -5,24 +5,25 @@ using Core.DTOs.SimulateLoan;
 using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Mapster;
 
 namespace Infrastructure.Services;
 
 public class BankService : IBankService
 {
-    private readonly IRequestLoanRepository _requestLoanRepository;
+    private readonly ILoanRequestRepository _loanRequestRepository;
     private readonly IApproveLoanRepository _approveLoanRepository;
     private readonly IApproveLoanDetailRepository _approveLoanDetailRepository;
     private readonly ILoanPaymentRepository _loanPaymentRepository;
 
     public BankService(
-        IRequestLoanRepository requestLoanRepository,
+        ILoanRequestRepository loanRequestRepository,
         IApproveLoanRepository approveLoanRepository,
         IApproveLoanDetailRepository approveLoanDetailRepository,
         ILoanPaymentRepository loanPaymentRepository
         )
     {
-        _requestLoanRepository = requestLoanRepository;
+        _loanRequestRepository = loanRequestRepository;
         _approveLoanRepository = approveLoanRepository;
         _approveLoanDetailRepository = approveLoanDetailRepository;
         _loanPaymentRepository = loanPaymentRepository;
@@ -30,10 +31,66 @@ public class BankService : IBankService
 
     public async Task<ApproveLoanResponse> ApproveLoanRequest(ApproveLoanDTO approveLoanDTO)
     {
-        if (approveLoanDTO == null)
-            throw new Exception("");
+        var loanRequest = await _loanRequestRepository.GetLoanRequestById(approveLoanDTO.LoanRequestId);
+        if (loanRequest == null)
+            throw new Exception("No se encontró la solicitud de préstamo.");
 
-        return await _approveLoanRepository.ApproveLoanRequest(approveLoanDTO);
+        if (loanRequest.Status == "Approved" || loanRequest.Status == "Rejected")
+            throw new Exception("La solicitud ya fue procesada");
+
+        loanRequest.Status = "Approved";
+
+        await _loanRequestRepository.UpdateLoanRequest(loanRequest);
+
+        var approveLoan = new ApprovedLoan
+        {
+            CustomerId = loanRequest.CustomerId,
+            LoanRequestId = loanRequest.Id,
+            RequestedAmount = loanRequest.Amount,
+            InterestRate = loanRequest.TermInterestRate.Interest,
+            Months = loanRequest.Months,
+            LoanType = loanRequest.LoanType,
+            Status = "Approved",
+            ApprovalDate = DateTime.UtcNow
+        };
+
+        var installments = CalculateInstallments(approveLoan.RequestedAmount, approveLoan.InterestRate, approveLoan.Months);
+        await _approveLoanRepository.SaveApprovedLoan(approveLoan, installments);
+
+        return loanRequest.Adapt<ApproveLoanResponse>();
+    }
+
+    public async Task<RejectLoanResponse> RejectLoanRequest(RejectLoanDTO rejectLoanDTO)
+    {
+        var loanRequest = await _loanRequestRepository.GetLoanRequestById(rejectLoanDTO.LoanRequestId);
+        if (loanRequest == null)
+            throw new Exception("No se encontro la solicitud del préstamo.");
+
+        if (loanRequest.Status == "Approved" || loanRequest.Status == "Rejected")
+            throw new Exception("La solicitud ya fue procesada");
+
+        if (!string.IsNullOrWhiteSpace(rejectLoanDTO.RejectedReason))
+            throw new Exception("Debe proporcionar una razón para el rechazo");
+
+        loanRequest.Status = "Rejected";
+        await _loanRequestRepository.UpdateLoanRequest(loanRequest);
+
+        var rejectedLoan = new ApprovedLoan
+        {
+            LoanRequestId = loanRequest.Id,
+            CustomerId = loanRequest.CustomerId,
+            LoanType = loanRequest.LoanType,
+            Months = loanRequest.Months,
+            RequestedAmount = loanRequest.Amount,
+            InterestRate = loanRequest.TermInterestRate.Interest,
+            Status = "Rejected",
+            ApprovalDate = DateTime.UtcNow,
+            RejectionReason = rejectLoanDTO.RejectedReason
+        };
+
+        await _approveLoanRepository.SaveRejectedLoan(rejectedLoan);
+        
+        return rejectedLoan.Adapt<RejectLoanResponse>();
     }
 
     public async Task<RequestLoanResponse> CreateRequestLoan(RequestLoanDTO requestLoan)
@@ -44,7 +101,7 @@ public class BankService : IBankService
         if (requestLoan.Months <= 0)
             throw new Exception("El plazo debe ser mayor a 0.");
 
-        return await _requestLoanRepository.CreateRequestLoan(requestLoan);
+        return await _loanRequestRepository.CreateRequestLoan(requestLoan);
     }
 
     public async Task<PaymentDetailResponse> GetLoanDetails(int loanRequestId)
@@ -63,11 +120,24 @@ public class BankService : IBankService
         return await _loanPaymentRepository.PayInstallments(request);
     }
 
-    public async Task<RejectLoanResponse> RejectLoanRequest(RejectLoanDTO rejectLoanDTO)
+    public List<Installment> CalculateInstallments(decimal amount, float interestRate, ushort months)
     {
-        if (rejectLoanDTO == null)
-            throw new Exception("No se Encontró el usuario");
+        var installments = new List<Installment>();
+        decimal principalAmount = amount / months;
+        decimal interestAmount = (amount * (decimal)interestRate) / 100 / months;
 
-        return await _approveLoanRepository.RejectLoanRequest(rejectLoanDTO);
+        for (ushort i = 1; i <= months; i++)
+        {
+            installments.Add(new Installment
+            {
+                TotalAmount = principalAmount + interestAmount,
+                PrincipalAmount = principalAmount,
+                InterestAmount = interestAmount,
+                DueDate = DateTime.UtcNow.AddMonths(i),
+                Status = "Pending"
+            });
+        }
+
+        return installments;
     }
 }
