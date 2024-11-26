@@ -67,6 +67,8 @@ cd BankManagement && dotnet run
 cd BankManagement && dotnet -c Release && dotnet run
 ```
 
+---
+
 # Requerimientos del Sistema
 ## 1. `Creación de la Entidad "Plazo y Tasa de Interés`
 
@@ -90,8 +92,6 @@ cd BankManagement && dotnet -c Release && dotnet run
   "totalPayment": 102685.856497854
 }
 ```
-
----
 
 ## 3. `Solicitud de Préstamo`
 
@@ -124,27 +124,44 @@ cd BankManagement && dotnet -c Release && dotnet run
 `POST` `/api/Bank/Approve-Loan`
 ```json
 {
-
+  "loanRequestId": 16,
+  "customerId": 1
 }
 ```
 
 `Response`
 ```json
 {
-
+  "customerId": 1,
+  "approvalDate": "2024-11-26T00:00:00",
+  "requestedAmount": 78000,
+  "months": 6,
+  "loanType": "Personal",
+  "interestRate": 9.15
 }
 ```
+
 `POST` `/api/Bank/Reject-Loan`
 ```json
 {
-
+  "loanRequestId": 18,
+  "customerId": 1,
+  "rejectedReason": "No cumple con los requisitos para el préstamo."
 }
 ```
 
 `Response`
 ```json
 {
+  "customerId": 1,
+  "rejectReason": "No cumple con los requisitos para el préstamo."
+}
+```
 
+`Si el prestamo ya fue aprobado o rechazado`
+```json
+{
+  "Message": "La solicitud con ese {Id} ya fue procesada"
 }
 ```
 

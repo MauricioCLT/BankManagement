@@ -14,7 +14,7 @@ public class LoanPaymentRepository : ILoanPaymentRepository
         _context = context;
     }
 
-    public async Task<PayInstallmentsResponse> PayInstallments(PayInstallmentsRequest payInstallmentsRequest)
+    public async Task<PayInstallmentsResponseDTO> PayInstallments(PayInstallmentsRequestDTO payInstallmentsRequest)
     {
         var loanRequest = await _context.LoanRequests
                 .Include(x => x.ApprovedLoan)
@@ -43,7 +43,7 @@ public class LoanPaymentRepository : ILoanPaymentRepository
 
         var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status != "Paid");
 
-        return new PayInstallmentsResponse
+        return new PayInstallmentsResponseDTO
         {
             LoanRequestId = loanRequest.Id,
             PaidInstallmentsCount = installments.Count,

@@ -1,9 +1,9 @@
 ﻿namespace Core.DTOs.Payment;
 
-public class PaymentDetailResponse
+public class PaymentDetailDTO
 {
     public int CustomerId { get; set; }
-    public string CustomerName { get; set; } = string.Empty; // Nombre completo
+    public string CustomerName { get; set; } = string.Empty;
     public DateTime ApprovedDate { get; set; }
     public decimal RequestedAmount { get; set; }
     public decimal TotalAmount { get; set; }
@@ -13,6 +13,6 @@ public class PaymentDetailResponse
     public float InterestRate { get; set; }
     public int CompletePayments { get; set; }
     public int UncompletePayments { get; set; }
-    public DateTime? NextDueDate { get; set; }
-    public string PaymentStatus { get; set; } = string.Empty;
+    public DateTime? NextDueDate { get; set; }  // Próxima fecha de vencimiento
+    public string PaymentStatus { get; set; } = string.Empty;  // Mensaje si todas las cuotas están pagadas
 }

@@ -24,7 +24,7 @@ public class LoanRequestRepository : ILoanRequestRepository
             .FirstOrDefaultAsync(x => x.Id == loanRequestId);
     }
 
-    public async Task<RequestLoanResponse> CreateRequestLoan(RequestLoanDTO requestLoanDTO)
+    public async Task<RequestLoanResponseDTO> CreateRequestLoan(RequestLoanDTO requestLoanDTO)
     {
         var termInterestRate = await _context.TermInterestRates
             .FirstOrDefaultAsync(x => x.Months == requestLoanDTO.Months);
@@ -39,7 +39,7 @@ public class LoanRequestRepository : ILoanRequestRepository
         _context.LoanRequests.Add(loanRequest);
         await _context.SaveChangesAsync();
 
-        return loanRequest.Adapt<RequestLoanResponse>();
+        return loanRequest.Adapt<RequestLoanResponseDTO>();
     }
 
     public async Task<LoanRequest> UpdateLoanRequest(LoanRequest loanRequest)

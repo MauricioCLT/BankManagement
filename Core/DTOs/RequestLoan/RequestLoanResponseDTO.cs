@@ -1,6 +1,6 @@
 ﻿namespace Core.DTOs.RequestLoan;
 
-public class RequestLoanResponse
+public class RequestLoanResponseDTO
 {
     public int CustomerId { get; set; }
     public int LoanRequestId { get; set; }

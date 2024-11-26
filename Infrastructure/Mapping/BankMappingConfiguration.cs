@@ -10,7 +10,7 @@ public class BankMappingConfiguration : IRegister
     public void Register(TypeAdapterConfig config)
     {
         // LoanRequest -> RequestLoanResponse
-        config.NewConfig<LoanRequest, RequestLoanResponse>()
+        config.NewConfig<LoanRequest, RequestLoanResponseDTO>()
             .Map(dest => dest.LoanType, src => src.LoanType)
             .Map(dest => dest.Months, src => src.Months)
             .Map(dest => dest.Amount, src => src.Amount)
@@ -40,7 +40,7 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.ApprovalDate, src => DateTime.UtcNow);
 
         // LoanRequest -> ApproveLoanResponse
-        config.NewConfig<LoanRequest, ApproveLoanResponse>()
+        config.NewConfig<LoanRequest, ApproveLoanResponseDTO>()
             .Map(dest => dest.CustomerId, src => src.CustomerId)
             .Map(dest => dest.RequestedAmount, src => src.Amount)
             .Map(dest => dest.Months, src => src.Months)
@@ -49,7 +49,7 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.ApprovalDate, src => DateTime.UtcNow.ToShortDateString());
 
         // ApprovedLoan -> RejectLoanResponse
-        config.NewConfig<ApprovedLoan, RejectLoanResponse>()
+        config.NewConfig<ApprovedLoan, RejectLoanResponseDTO>()
             .Map(dest => dest.CustomerId, src => src.CustomerId)
             .Map(dest => dest.RejectReason, src => src.RejectionReason);
     }

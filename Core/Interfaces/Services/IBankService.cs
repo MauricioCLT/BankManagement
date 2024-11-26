@@ -7,11 +7,11 @@ namespace Core.Interfaces.Services;
 
 public interface IBankService
 {
-    public Task<RequestLoanResponse> CreateRequestLoan(RequestLoanDTO requestLoan);
-    public Task<ApproveLoanResponse> ApproveLoanRequest(ApproveLoanDTO approveLoanDTO);
-    public Task<RejectLoanResponse> RejectLoanRequest(RejectLoanDTO rejectLoanDTO);
-    public Task<PaymentDetailResponse> GetLoanDetails(int loanRequestId);
-    public Task<PayInstallmentsResponse> PayInstallments(PayInstallmentsRequest request);
+    public Task<RequestLoanResponseDTO> CreateRequestLoan(RequestLoanDTO requestLoan);
+    public Task<ApproveLoanResponseDTO> ApproveLoanRequest(ApproveLoanDTO approveLoanDTO);
+    public Task<RejectLoanResponseDTO> RejectLoanRequest(RejectLoanDTO rejectLoanDTO);
+    public Task<PaymentDetailResponseDTO> GetLoanDetails(int loanRequestId);
+    public Task<PayInstallmentsResponseDTO> PayInstallments(PayInstallmentsRequestDTO request);
 
     public List<Installment> CalculateInstallments(decimal amount, float interestRate, ushort months);
 }

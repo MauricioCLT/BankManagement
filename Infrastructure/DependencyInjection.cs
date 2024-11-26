@@ -94,7 +94,7 @@ public static class DependencyInjection
         services.AddScoped<ISimulateLoanRepository, SimulateLoanRepository>();
         services.AddScoped<ILoanRequestRepository, LoanRequestRepository>();
         services.AddScoped<IApproveLoanRepository, ApproveLoanRepository>();
-        services.AddScoped<IApproveLoanDetailRepository, DetailedPaymentRepository>();
+        services.AddScoped<ILoanDetailedRepository, LoanDetailedRepository>();
         services.AddScoped<ILoanPaymentRepository, LoanPaymentRepository>();
 
         return services;

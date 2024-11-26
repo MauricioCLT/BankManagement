@@ -1,6 +1,6 @@
 ﻿namespace Core.DTOs.ApproveLoan;
 
-public class ApproveLoanResponse
+public class ApproveLoanResponseDTO
 {
     public int CustomerId { get; set; }
     public DateTime ApprovalDate { get; set; }

@@ -41,13 +41,13 @@ public class BankController : BaseApiController
     }
 
     [HttpGet("{loanRequestId}/Details")]
-    public async Task<IActionResult> GetLoanDetails(int loanRequestId)
+    public async Task<IActionResult> GetLoanDetails([FromRoute] int loanRequestId)
     {
         return Ok(await _bankService.GetLoanDetails(loanRequestId));
     }
 
     [HttpPost("{loanRequestId}/Pay-Installment")]
-    public async Task<IActionResult> PayInstallment(PayInstallmentsRequest request)
+    public async Task<IActionResult> PayInstallment(PayInstallmentsRequestDTO request)
     {
         return Ok(await _bankService.PayInstallments(request));
     }

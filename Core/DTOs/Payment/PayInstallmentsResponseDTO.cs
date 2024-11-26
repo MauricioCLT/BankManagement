@@ -1,6 +1,6 @@
 ﻿namespace Core.DTOs.Payment;
 
-public class PayInstallmentsResponse
+public class PayInstallmentsResponseDTO
 {
     public int LoanRequestId { get; set; }
     public int PaidInstallmentsCount { get; set; }
