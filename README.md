@@ -316,17 +316,28 @@ cd BankManagement && dotnet -c Release && dotnet run
 ```
 
 ## `8. Listado de Cuotas Atrasadas`
-Listar todas las cuotas atrasadas, mostrando:
-- Cliente asociado.
-- Fecha de vencimiento de la cuota.
-- Días de atraso.
-- Monto pendiente.
-
 `Response`
 ```json
-{
-
-}
+[
+  {
+    "customer": {
+      "id": 1,
+      "name": "Clt Api"
+    },
+    "dueDate": "1/4/2024",
+    "daysLate": "La cuota tiene 240 días de atraso.",
+    "amountPending": 45754.166666666664
+  },
+  {
+    "customer": {
+      "id": 1,
+      "name": "Clt Api"
+    },
+    "dueDate": "2/1/2024",
+    "daysLate": "La cuota tiene 330 días de atraso.",
+    "amountPending": 45754.166666666664
+  }
+]
 ```
 
 ---

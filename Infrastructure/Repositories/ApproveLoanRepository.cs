@@ -20,15 +20,10 @@ public class ApproveLoanRepository : IApproveLoanRepository
 
     public async Task SaveApprovedLoan(ApprovedLoan approvedLoan, List<Installment> installments)
     {
+        approvedLoan.Installments = installments;
+
         _context.ApprovedLoans.Add(approvedLoan);
-        await _context.SaveChangesAsync();
 
-        foreach (var installment in installments)
-        {
-            installment.ApprovedLoanId = approvedLoan.Id;
-        }
-
-        _context.Installments.AddRange(installments);
         await _context.SaveChangesAsync();
     }
 

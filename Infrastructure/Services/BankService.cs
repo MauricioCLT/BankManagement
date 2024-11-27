@@ -41,19 +41,22 @@ public class BankService : IBankService
 
         await _loanRequestRepository.UpdateLoanRequest(loanRequest);
 
-        var approveLoan = new ApprovedLoan
-        {
-            CustomerId = loanRequest.CustomerId,
-            LoanRequestId = loanRequest.Id,
-            RequestedAmount = loanRequest.Amount,
-            InterestRate = loanRequest.TermInterestRate.Interest,
-            Months = loanRequest.Months,
-            LoanType = loanRequest.LoanType,
-            Status = "Approved",
-            ApprovalDate = DateTime.UtcNow
-        };
+        var approveLoan = loanRequest.Adapt<ApprovedLoan>();
 
-        var installments = CalculateInstallments(approveLoan.RequestedAmount, approveLoan.InterestRate, approveLoan.Months);
+        //var approveLoan = new ApprovedLoan
+        //{
+        //    CustomerId = loanRequest.CustomerId,
+        //    LoanRequestId = loanRequest.Id,
+        //    RequestedAmount = loanRequest.Amount,
+        //    InterestRate = loanRequest.TermInterestRate.Interest,
+        //    Months = loanRequest.Months,
+        //    LoanType = loanRequest.LoanType,
+        //    Status = "Approved",
+        //    ApprovalDate = DateTime.UtcNow
+        //};
+
+        var installments = CalculateInstallments(
+            approveLoan.RequestedAmount, approveLoan.InterestRate, approveLoan.Months);
         await _approveLoanRepository.SaveApprovedLoan(approveLoan, installments);
 
         return loanRequest.Adapt<ApproveLoanResponseDTO>();
@@ -88,7 +91,7 @@ public class BankService : IBankService
         };
 
         await _approveLoanRepository.SaveRejectedLoan(rejectedLoan);
-        
+
         return rejectedLoan.Adapt<RejectLoanResponseDTO>();
     }
 
@@ -159,20 +162,23 @@ public class BankService : IBankService
         if (installments.Count != request.InstallmentIds.Count)
             throw new Exception("Algunas cuotas ya fueron pagadas o no pertenecen al préstamo.");
 
+        var installmentPayment = new InstallmentPayment
+        {
+            Installments = installments,
+            PaymentDate = DateTime.UtcNow,
+            Status = "Paid",
+        };
+
         foreach (var installment in installments)
         {
             installment.Status = "Complete";
             _loanPaymentRepository.UpdateInstallment(installment);
-
-            var installmentPayment = new InstallmentPayment
-            {
-                InstallmentId = installment.Id,
-                PaymentDate = DateTime.UtcNow,
-                Status = "Paid",
-                PaymentAmount = installment.PrincipalAmount + installment.InterestAmount,
-            };
-            await _loanPaymentRepository.AddInstallmentPayment(installmentPayment);
+            installmentPayment.Installments.Add(installment);
+            installmentPayment.PaymentAmount += installment.PrincipalAmount + installment.InterestAmount;
         }
+
+        await _loanPaymentRepository.AddInstallmentPayment(installmentPayment);
+
 
         await _loanPaymentRepository.SaveChangesAsync();
 
@@ -195,7 +201,8 @@ public class BankService : IBankService
 
         for (ushort i = 1; i <= months; i++)
         {
-            var firstDayOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(i);
+            var firstDayOfMonth = new DateTime(
+                DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(i);
 
             installments.Add(new Installment
             {

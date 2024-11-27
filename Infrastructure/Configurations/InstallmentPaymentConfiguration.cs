@@ -19,8 +19,8 @@ public class InstallmentPaymentConfiguration : IEntityTypeConfiguration<Installm
         entity.Property(x => x.Status)
               .IsRequired();
 
-        entity.HasOne(x => x.Installment)
-              .WithMany(x => x.InstallmentPayments)
-              .HasForeignKey(x => x.InstallmentId);
+        entity.HasMany(x => x.Installments)
+              .WithOne(x => x.InstallmentPayment)
+              .HasForeignKey(x => x.InstallmentPaymentId);
     }
 }

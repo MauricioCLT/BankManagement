@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
                 .Include(x => x.TermInterestRate)
                 .Include(x => x.ApprovedLoan)
                     .ThenInclude(x => x.Installments)
-                    .ThenInclude(x => x.InstallmentPayments)
+                    .ThenInclude(x => x.InstallmentPayment)
                 .FirstOrDefaultAsync(x => x.Id == loanRequestId);
         }
     }
