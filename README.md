@@ -216,16 +216,103 @@ cd BankManagement && dotnet -c Release && dotnet run
 ```
 
 ## `7. Listado de Cuotas`
-Enpoint para listar las cuotas de un préstamo. Permitir filtrar por:
-- Todas las cuotas.
-- Cuotas pagadas.
-- Cuotas pendientes por pagar.
+`GET` `/FilterLoans/{loanId}/installments`
+
+`Filter Default All` `FilterLoans/{25}/installments`
+
+`Response`
+
+```json
+[
+  {
+    "id": 98,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2024-12-01T00:00:00Z",
+    "status": "Complete"
+  },
+  {
+    "id": 99,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-01-01T00:00:00Z",
+    "status": "Complete"
+  },
+  {
+    "id": 100,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-02-01T00:00:00Z",
+    "status": "Pending"
+  },
+  {
+    "id": 101,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-03-01T00:00:00Z",
+    "status": "Pending"
+  },
+  {
+    "id": 102,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-04-01T00:00:00Z",
+    "status": "Pending"
+  },
+  {
+    "id": 103,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-05-01T00:00:00Z",
+    "status": "Pending"
+  }
+]
+```
+
+`Filter` `FilterLoans/{25}/installments?filter=Complete`
 
 `Response`
 ```json
-{
+[
+  {
+    "id": 98,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2024-12-01T00:00:00Z",
+    "status": "Complete"
+  },
+  {
+    "id": 99,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-01-01T00:00:00Z",
+    "status": "Complete"
+  }
+]
+```
 
-}
+`Filter` `FilterLoans/{25}/installments?filter=Pending`
+
+`Response`
+```json
+[
+  {
+    "id": 100,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-02-01T00:00:00Z",
+    "status": "Pending"
+  },
+  {
+    "id": 101,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-03-01T00:00:00Z",
+    "status": "Pending"
+  },
+  {
+    "id": 102,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-04-01T00:00:00Z",
+    "status": "Pending"
+  },
+  {
+    "id": 103,
+    "totalAmount": 45754.166666666664,
+    "dueDate": "2025-05-01T00:00:00Z",
+    "status": "Pending"
+  }
+]
 ```
 
 ## `8. Listado de Cuotas Atrasadas`

@@ -15,50 +15,33 @@ public class LoanPaymentRepository : ILoanPaymentRepository
         _context = context;
     }
 
-    public async Task<PayInstallmentsResponseDTO> PayInstallments(PayInstallmentsRequestDTO payInstallmentsRequest)
+    public async Task<LoanRequest> GetLoanRequestByIdWithDetails(int loanRequestId)
     {
-        var loanRequest = await _context.LoanRequests
-                .Include(x => x.ApprovedLoan)
-                .ThenInclude(x => x.Installments)
-                .FirstOrDefaultAsync(x => x.Id == payInstallmentsRequest.LoanRequestId);
+        return await _context.LoanRequests
+            .Include(x => x.ApprovedLoan)
+            .ThenInclude(x => x.Installments)
+            .FirstOrDefaultAsync(x => x.Id == loanRequestId);
+    }
 
-        if (loanRequest == null)
-            throw new Exception("Loan request not found.");
+    public async Task<List<Installment>> GetPendingInstallments(int approvedLoanId, List<int> installmentIds)
+    {
+        return await _context.Installments
+            .Where(x => installmentIds.Contains(x.Id) && x.ApprovedLoanId == approvedLoanId && x.Status != "Complete")
+            .ToListAsync();
+    }
 
-        // Validar cuotas disponibles
-        var installments = await _context.Installments
-            .Where(x => payInstallmentsRequest.InstallmentIds.Contains(x.Id)
-                   && x.ApprovedLoanId == loanRequest.ApprovedLoan.Id
-                   && x.Status != "Complete").ToListAsync();
+    public void UpdateInstallment(Installment installment)
+    {
+        _context.Installments.Update(installment);
+    }
 
-        if (installments.Count != payInstallmentsRequest.InstallmentIds.Count)
-            throw new Exception("Some installments are already paid or not part of the loan.");
+    public async Task AddInstallmentPayment(InstallmentPayment installmentPayment)
+    {
+        await _context.InstallmentPayments.AddAsync(installmentPayment);
+    }
 
-        foreach (var installment in installments)
-        {
-            installment.Status = "Complete";
-            _context.Installments.Update(installment);
-
-            var installmentPayment = new InstallmentPayment
-            {
-                InstallmentId = installment.Id,
-                PaymentDate = DateTime.UtcNow,
-                Status = "Paid",
-                PaymentAmount = installment.PrincipalAmount + installment.InterestAmount,
-            };
-            await _context.InstallmentPayments.AddAsync(installmentPayment);
-        }
-
+    public async Task SaveChangesAsync()
+    {
         await _context.SaveChangesAsync();
-
-        var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status != "Complete");
-
-        return new PayInstallmentsResponseDTO
-        {
-            LoanRequestId = loanRequest.Id,
-            PaidInstallments = installments.Count,
-            RemainingInstallments = remainingInstallmentsCount,
-            StatusMessage = remainingInstallmentsCount == 0 ? "Todas las cuotas fueron pagadas." : "Queda(n) alguna(s) cuota(s) pendiente(s)."
-        };
     }
 }

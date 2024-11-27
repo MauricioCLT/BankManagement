@@ -1,7 +1,6 @@
 ﻿using Core.DTOs.ApproveLoan;
 using Core.DTOs.Payment;
 using Core.DTOs.RequestLoan;
-using Core.Entities;
 using Core.Interfaces.Services;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Authorization;
@@ -26,14 +25,14 @@ public class BankController : BaseApiController
         return Ok(await _bankService.CreateRequestLoan(requestLoan));
     }
 
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("Approve-Loan")]
     public async Task<IActionResult> ApproveLoan([FromBody] ApproveLoanDTO approveLoanDTO)
     {
         return Ok(await _bankService.ApproveLoanRequest(approveLoanDTO));
     }
 
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("Reject-Loan")]
     public async Task<IActionResult> RejectLoan([FromBody] RejectLoanDTO rejectLoanDTO)
     {

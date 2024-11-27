@@ -1,4 +1,6 @@
 ﻿using Core.DTOs.ApproveLoan;
+using Core.DTOs.Customer;
+using Core.DTOs.Installment;
 using Core.DTOs.RequestLoan;
 using Core.Entities;
 using Mapster;
@@ -55,12 +57,23 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.InterestRate, src => src.TermInterestRate.Interest)
             .Map(dest => dest.Months, src => src.Months)
             .Map(dest => dest.LoanType, src => src.LoanType)
-            .Ignore(dest => dest.ApprovalDate) // Configurado manualmente
-            .Ignore(dest => dest.Status);     // Configurado manualmente
+            .Ignore(dest => dest.ApprovalDate)
+            .Ignore(dest => dest.Status);
 
         // ApprovedLoan -> RejectLoanResponse
         config.NewConfig<ApprovedLoan, RejectLoanResponseDTO>()
             .Map(dest => dest.CustomerId, src => src.CustomerId)
             .Map(dest => dest.RejectReason, src => src.RejectionReason);
+
+        config.NewConfig<Installment, OverdueInstallmentDTO>()
+            .Map(dest => dest.Customer,
+                 src => new DetailedCustomerDTO
+                 {
+                     Id = src.ApprovedLoan.Customer.Id,
+                     Name = $"{src.ApprovedLoan.Customer.FirstName} {src.ApprovedLoan.Customer.LastName}"
+                 })
+            .Map(dest => dest.DueDate, src => src.DueDate.ToShortDateString())
+            .Map(dest => dest.DaysLate, src => $"La cuota tiene {Math.Max(0, (DateTime.UtcNow.Date - src.DueDate.Date).Days)} días de atraso.")
+            .Map(dest => dest.AmountPending, src => src.TotalAmount);
     }
 }

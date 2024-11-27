@@ -96,6 +96,7 @@ public static class DependencyInjection
         services.AddScoped<IApproveLoanRepository, ApproveLoanRepository>();
         services.AddScoped<ILoanDetailedRepository, LoanDetailedRepository>();
         services.AddScoped<ILoanPaymentRepository, LoanPaymentRepository>();
+        services.AddScoped<IInstallmentRepository, InstallmentRepository>();
 
         return services;
     }
@@ -104,6 +105,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IBankService, BankService>();
         services.AddScoped<ISimulateLoanService, SimulateLoanService>();
+        services.AddScoped<IInstallmentService, InstallmentService>();
 
         return services;
     }
