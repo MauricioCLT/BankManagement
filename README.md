@@ -7,7 +7,7 @@
 git clone https://github.com/MauricioCLT/BankManagement.git && cd BankManagement
 ```
 
-### 2. Crear un nuevo volumen de docker
+### 2. Crear un nuevo contenedor de PostgreSQL en Docker
 `CMD`
 ```sh
 docker container run ^
@@ -43,18 +43,23 @@ dotnet ef database update -p Infrastructure -s BankManagement
 ### 5. Datos para la prueba
 `Customers`
 ```sql
-insert into customers (id, name, email, phone, address, city, state, zipcode, country, credit_limit) 
-values (1, 'Camey Aland', 'camery@aland.com', '555-555-5555', '123 Main Street', 'New York', 'NY', '10001', 'USA', 10000);
+INSERT INTO public."Customers"
+("FirstName", "LastName", "Cid", "Email", "Phone", "Address", "Role")
+VALUES('Clt', 'Api', 1234567, 'clt@gmail.com', '123456789', 'Ayolas 437, Asunción 001012', 'Customer');
 ```
 
 `TermInterestRates`
 ```sql
-insert into term_interest_rates (rate, months)
-values (9.15, 6)
-values (12.5, 12)
-values (15.0, 24)
-values (18.0, 36)
-values (21.0, 48);
+INSERT INTO public."TermInterestRates"
+        ("Months", "Interest")
+values    (6,         9.81),
+	      (12,        12.15),
+	      (18,        15.15),
+	      (24,        17.15),
+	      (30,        19.15),
+	      (36,        20.15),
+	      (42,        21.15),
+	      (48,        21.15);
 ```
 
 ### 5. Ejecución del proyecto
@@ -174,18 +179,18 @@ cd BankManagement && dotnet -c Release && dotnet run
 ```json
 {
   "customerId": 1,
-  "customerName": "Camey Aland",
-  "approvedDate": "2024-11-25T15:52:25.656532Z",
-  "requestedAmount": 10360000,
-  "totalAmount": 11307940,
-  "revenue": 947940,
+  "customerName": "Mauricio Ramírez",
+  "approvedDate": "2024-11-27T00:15:09.855923Z",
+  "requestedAmount": 450000,
+  "totalAmount": 545175,
+  "revenue": 95175,
   "months": 6,
-  "loanType": "Hipotecario",
-  "interestRate": 9.15,
-  "completePayments": 0,
-  "uncompletePayments": 0,
-  "nextDueDate": null,
-  "paymentStatus": "All payments completed"
+  "loanType": "Automotriz",
+  "interestRate": 21.15,
+  "completePayments": 5,
+  "uncompletePayments": 1,
+  "nextDueDate": "2025-05-01",
+  "paymentStatus": "Pending payments"
 }
 ```
 
@@ -193,9 +198,9 @@ cd BankManagement && dotnet -c Release && dotnet run
 `POST` `api/Bank/{loanRequestId}/Pay-Installment`
 ```json
 {
-  "loanRequestId": 0,
+  "loanRequestId": 43,
   "installmentIds": [
-    0
+    1, 2, 3, 4, 5
   ]
 }
 ```
@@ -203,7 +208,10 @@ cd BankManagement && dotnet -c Release && dotnet run
 `Response`
 ```json
 {
-
+  "loanRequestId": 43,
+  "paidInstallments": 5,
+  "remainingInstallments": 1,
+  "statusMessage": "Quedan algunas cuotas pendientes."
 }
 ```
 
