@@ -35,7 +35,7 @@ public class BankService : IBankService
             throw new Exception("No se encontró la solicitud de préstamo.");
 
         if (loanRequest.Status == "Approved" || loanRequest.Status == "Rejected")
-            throw new Exception("La solicitud ya fue procesada");
+            throw new Exception("La solicitud ya fue procesada anteriormente.");
 
         loanRequest.Status = "Approved";
 
@@ -66,7 +66,7 @@ public class BankService : IBankService
             throw new Exception("No se encontro la solicitud del préstamo.");
 
         if (loanRequest.Status == "Approved" || loanRequest.Status == "Rejected")
-            throw new Exception("La solicitud ya fue procesada");
+            throw new Exception("La solicitud ya fue procesada anteriormente.");
 
         if (string.IsNullOrWhiteSpace(rejectLoanDTO.RejectedReason))
             throw new Exception("Debe proporcionar una razón para el rechazo");
@@ -116,11 +116,24 @@ public class BankService : IBankService
         var totalAmount = loanRequest.Amount + loanRequest.Amount * (decimal)loanRequest.TermInterestRate.Interest / 100;
         var revenue = totalAmount - loanRequest.Amount;
 
-        var completePayments = loanRequest.ApprovedLoan?.Installments
-            .Sum(x => x.InstallmentPayments.Count(x => x.Status == "Complete")) ?? 0;
+        var installments = loanRequest.ApprovedLoan?.Installments.ToList();
+        foreach (var installment in installments)
+        {
+            Console.WriteLine($"Installment Id: {installment.Id}, Payments Count: {installment.InstallmentPayments.Count()}");
 
-        var uncompletePayments = loanRequest.ApprovedLoan?.Installments
-            .Sum(x => x.InstallmentPayments.Count(x => x.Status == "Pending")) ?? 0;
+            foreach (var payment in installment.InstallmentPayments)
+            {
+                Console.WriteLine($"Payment Status: {payment.Status}");
+            }
+        }
+
+        var completePayments = loanRequest.ApprovedLoan.Installments
+            .SelectMany(x => x.InstallmentPayments)
+            .Count(x => x.Status == "Complete" || x.Status == "Paid");
+
+        var uncompletePayments = loanRequest.ApprovedLoan.Installments
+            .SelectMany(x => x.InstallmentPayments)
+            .Count(x => x.Status == "Pending");
 
         var nextDueDate = loanRequest.ApprovedLoan?.Installments
             .Where(x => x.Status == "Pending")
@@ -161,12 +174,14 @@ public class BankService : IBankService
 
         for (ushort i = 1; i <= months; i++)
         {
+            var firstDayOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(i);
+
             installments.Add(new Installment
             {
                 TotalAmount = principalAmount + interestAmount,
                 PrincipalAmount = principalAmount,
                 InterestAmount = interestAmount,
-                DueDate = DateTime.UtcNow.AddMonths(i),
+                DueDate = firstDayOfMonth,
                 Status = "Pending"
             });
         }

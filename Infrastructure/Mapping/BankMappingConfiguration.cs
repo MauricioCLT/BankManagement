@@ -48,6 +48,16 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.InterestRate, src => src.TermInterestRate.Interest)
             .Map(dest => dest.ApprovalDate, src => DateTime.UtcNow.ToShortDateString());
 
+        TypeAdapterConfig<LoanRequest, ApprovedLoan>.NewConfig()
+            .Map(dest => dest.CustomerId, src => src.CustomerId)
+            .Map(dest => dest.LoanRequestId, src => src.Id)
+            .Map(dest => dest.RequestedAmount, src => src.Amount)
+            .Map(dest => dest.InterestRate, src => src.TermInterestRate.Interest)
+            .Map(dest => dest.Months, src => src.Months)
+            .Map(dest => dest.LoanType, src => src.LoanType)
+            .Ignore(dest => dest.ApprovalDate) // Configurado manualmente
+            .Ignore(dest => dest.Status);     // Configurado manualmente
+
         // ApprovedLoan -> RejectLoanResponse
         config.NewConfig<ApprovedLoan, RejectLoanResponseDTO>()
             .Map(dest => dest.CustomerId, src => src.CustomerId)

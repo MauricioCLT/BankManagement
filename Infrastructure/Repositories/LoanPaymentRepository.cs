@@ -1,4 +1,5 @@
 ﻿using Core.DTOs.Payment;
+using Core.Entities;
 using Core.Interfaces.Repositories;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -26,29 +27,38 @@ public class LoanPaymentRepository : ILoanPaymentRepository
 
         // Validar cuotas disponibles
         var installments = await _context.Installments
-            .Where(x => payInstallmentsRequest.InstallmentIds.Contains(x.Id) 
-                   && x.ApprovedLoanId == loanRequest.ApprovedLoan.Id 
-                   && x.Status != "Paid").ToListAsync();
+            .Where(x => payInstallmentsRequest.InstallmentIds.Contains(x.Id)
+                   && x.ApprovedLoanId == loanRequest.ApprovedLoan.Id
+                   && x.Status != "Complete").ToListAsync();
 
         if (installments.Count != payInstallmentsRequest.InstallmentIds.Count)
             throw new Exception("Some installments are already paid or not part of the loan.");
 
         foreach (var installment in installments)
         {
-            installment.Status = "Paid";
+            installment.Status = "Complete";
             _context.Installments.Update(installment);
+
+            var installmentPayment = new InstallmentPayment
+            {
+                InstallmentId = installment.Id,
+                PaymentDate = DateTime.UtcNow,
+                Status = "Paid",
+                PaymentAmount = installment.PrincipalAmount + installment.InterestAmount,
+            };
+            await _context.InstallmentPayments.AddAsync(installmentPayment);
         }
 
         await _context.SaveChangesAsync();
 
-        var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status != "Paid");
+        var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status != "Complete");
 
         return new PayInstallmentsResponseDTO
         {
             LoanRequestId = loanRequest.Id,
-            PaidInstallmentsCount = installments.Count,
-            RemainingInstallmentsCount = remainingInstallmentsCount,
-            StatusMessage = remainingInstallmentsCount == 0 ? "All installments paid" : "Some installments still pending"
+            PaidInstallments = installments.Count,
+            RemainingInstallments = remainingInstallmentsCount,
+            StatusMessage = remainingInstallmentsCount == 0 ? "Todas las cuotas fueron pagadas." : "Queda(n) alguna(s) cuota(s) pendiente(s)."
         };
     }
 }
