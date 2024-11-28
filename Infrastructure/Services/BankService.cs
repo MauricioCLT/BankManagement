@@ -30,6 +30,9 @@ public class BankService : IBankService
 
     public async Task<ApproveLoanResponseDTO> ApproveLoanRequest(ApproveLoanDTO approveLoanDTO)
     {
+        if (approveLoanDTO.LoanRequestId <= 0)
+            throw new Exception("El id no puede ser 0 ni negativo.");
+
         var loanRequest = await _loanRequestRepository.GetLoanRequestById(approveLoanDTO.LoanRequestId);
         if (loanRequest == null)
             throw new Exception("No se encontró la solicitud de préstamo.");
@@ -42,18 +45,6 @@ public class BankService : IBankService
         await _loanRequestRepository.UpdateLoanRequest(loanRequest);
 
         var approveLoan = loanRequest.Adapt<ApprovedLoan>();
-
-        //var approveLoan = new ApprovedLoan
-        //{
-        //    CustomerId = loanRequest.CustomerId,
-        //    LoanRequestId = loanRequest.Id,
-        //    RequestedAmount = loanRequest.Amount,
-        //    InterestRate = loanRequest.TermInterestRate.Interest,
-        //    Months = loanRequest.Months,
-        //    LoanType = loanRequest.LoanType,
-        //    Status = "Approved",
-        //    ApprovalDate = DateTime.UtcNow
-        //};
 
         var installments = CalculateInstallments(
             approveLoan.RequestedAmount, approveLoan.InterestRate, approveLoan.Months);
@@ -75,35 +66,31 @@ public class BankService : IBankService
             throw new Exception("Debe proporcionar una razón para el rechazo");
 
         loanRequest.Status = "Rejected";
+
         await _loanRequestRepository.UpdateLoanRequest(loanRequest);
 
-        var rejectedLoan = new ApprovedLoan
-        {
-            LoanRequestId = loanRequest.Id,
-            CustomerId = loanRequest.CustomerId,
-            LoanType = loanRequest.LoanType,
-            Months = loanRequest.Months,
-            RequestedAmount = loanRequest.Amount,
-            InterestRate = loanRequest.TermInterestRate.Interest,
-            Status = "Rejected",
-            ApprovalDate = DateTime.UtcNow,
-            RejectionReason = rejectLoanDTO.RejectedReason
-        };
+        var rejectedLoan = loanRequest.Adapt<ApprovedLoan>();
+        rejectedLoan.Status = "Rejected";
+        rejectedLoan.RejectionReason = rejectLoanDTO.RejectedReason;
 
         await _approveLoanRepository.SaveRejectedLoan(rejectedLoan);
 
         return rejectedLoan.Adapt<RejectLoanResponseDTO>();
     }
 
-    public async Task<RequestLoanResponseDTO> CreateRequestLoan(RequestLoanDTO requestLoan)
+    public async Task<RequestLoanResponseDTO> CreateRequestLoan(RequestLoanDTO requestLoanDTO)
     {
-        if (requestLoan.AmountRequest <= 0)
-            throw new Exception("El monto deber ser mayor a 0.");
+        var termInterestRate = await _loanRequestRepository.GetByMonths(requestLoanDTO.Months);
+        if (termInterestRate == null)
+            throw new Exception($"No se encontró una tasa de interés para {requestLoanDTO.Months} meses.");
 
-        if (requestLoan.Months <= 0)
-            throw new Exception("El plazo debe ser mayor a 0.");
+        var loanRequest = requestLoanDTO.Adapt<LoanRequest>();
+        loanRequest.TermInterestRateId = termInterestRate.Id;
+        loanRequest.RequestDate = DateTime.UtcNow;
 
-        return await _loanRequestRepository.CreateRequestLoan(requestLoan);
+        var createdLoanRequest = await _loanRequestRepository.CreateRequestLoan(loanRequest);
+
+        return createdLoanRequest.Adapt<RequestLoanResponseDTO>();
     }
 
     public async Task<PaymentDetailResponseDTO> GetLoanDetails(int loanRequestId)
@@ -166,20 +153,24 @@ public class BankService : IBankService
         {
             Installments = installments,
             PaymentDate = DateTime.UtcNow,
-            Status = "Paid",
+            Status = "Complete",
         };
 
+        var completedInstallments = new List<Installment>();
         foreach (var installment in installments)
         {
             installment.Status = "Complete";
-            _loanPaymentRepository.UpdateInstallment(installment);
-            installmentPayment.Installments.Add(installment);
+            completedInstallments.Add(installment);
             installmentPayment.PaymentAmount += installment.PrincipalAmount + installment.InterestAmount;
         }
 
+        foreach (var installment in completedInstallments)
+        {
+            _loanPaymentRepository.UpdateInstallment(installment);
+            installmentPayment.Installments.Add(installment);
+        }
+
         await _loanPaymentRepository.AddInstallmentPayment(installmentPayment);
-
-
         await _loanPaymentRepository.SaveChangesAsync();
 
         var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status == "Pending");
@@ -192,6 +183,49 @@ public class BankService : IBankService
             StatusMessage = remainingInstallmentsCount == 0 ? "Todas las cuotas fueron pagadas." : "Quedan cuotas pendientes."
         };
     }
+
+    //public async Task<PayInstallmentsResponseDTO> PayInstallments(PayInstallmentsRequestDTO request)
+    //{
+    //    if (request == null || !request.InstallmentIds.Any())
+    //        throw new Exception("No se especificaron cuotas para pagar.");
+
+    //    var loanRequest = await _loanPaymentRepository.GetLoanRequestByIdWithDetails(request.LoanRequestId);
+    //    if (loanRequest == null)
+    //        throw new Exception("No se encontró la solicitud de préstamo.");
+
+    //    var installments = await _loanPaymentRepository.GetPendingInstallments(loanRequest.ApprovedLoan.Id, request.InstallmentIds);
+    //    if (installments.Count != request.InstallmentIds.Count)
+    //        throw new Exception("Algunas cuotas ya fueron pagadas o no pertenecen al préstamo.");
+
+    //    var installmentPayment = new InstallmentPayment
+    //    {
+    //        Installments = installments,
+    //        PaymentDate = DateTime.UtcNow,
+    //        Status = "Complete",
+    //    };
+
+    //    foreach (var installment in installments)
+    //    {
+    //        installment.Status = "Complete";
+    //        _loanPaymentRepository.UpdateInstallment(installment);
+    //        installmentPayment.Installments.Add(installment);
+    //        installmentPayment.PaymentAmount += installment.PrincipalAmount + installment.InterestAmount;
+    //    }
+
+    //    await _loanPaymentRepository.AddInstallmentPayment(installmentPayment);
+
+    //    await _loanPaymentRepository.SaveChangesAsync();
+
+    //    var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status == "Pending");
+
+    //    return new PayInstallmentsResponseDTO
+    //    {
+    //        LoanRequestId = loanRequest.Id,
+    //        PaidInstallments = installments.Count,
+    //        RemainingInstallments = remainingInstallmentsCount,
+    //        StatusMessage = remainingInstallmentsCount == 0 ? "Todas las cuotas fueron pagadas." : "Quedan cuotas pendientes."
+    //    };
+    //}
 
     public List<Installment> CalculateInstallments(decimal amount, float interestRate, ushort months)
     {

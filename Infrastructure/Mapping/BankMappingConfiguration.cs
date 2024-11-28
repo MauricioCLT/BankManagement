@@ -11,7 +11,6 @@ public class BankMappingConfiguration : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        // LoanRequest -> RequestLoanResponse
         config.NewConfig<LoanRequest, RequestLoanResponseDTO>()
             .Map(dest => dest.LoanType, src => src.LoanType)
             .Map(dest => dest.Months, src => src.Months)
@@ -20,7 +19,6 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.RequestDate, src => src.RequestDate.ToShortDateString())
             .Map(dest => dest.Status, src => src.Status);
 
-        // RequestLoanDTO -> LoanRequest
         config.NewConfig<RequestLoanDTO, LoanRequest>()
             .Map(dest => dest.CustomerId, src => src.CustomerId)
             .Map(dest => dest.LoanType, src => src.LoanType)
@@ -28,20 +26,17 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.Amount, src => src.AmountRequest)
             .Map(dest => dest.RequestDate, src => DateTime.UtcNow);
 
-        // ApproveLoanDTO -> ApprovedLoan
         config.NewConfig<ApproveLoanDTO, ApprovedLoan>()
             .Map(dest => dest.LoanRequestId, src => src.LoanRequestId)
             .Map(dest => dest.Status, src => "Approved")
             .Map(dest => dest.ApprovalDate, src => DateTime.UtcNow);
 
-        // RejectLoanDTO -> ApprovedLoan
         config.NewConfig<RejectLoanDTO, ApprovedLoan>()
             .Map(dest => dest.LoanRequestId, src => src.LoanRequestId)
             .Map(dest => dest.Status, src => "Rejected")
             .Map(dest => dest.RejectionReason, src => src.RejectedReason)
             .Map(dest => dest.ApprovalDate, src => DateTime.UtcNow);
 
-        // LoanRequest -> ApproveLoanResponse
         config.NewConfig<LoanRequest, ApproveLoanResponseDTO>()
             .Map(dest => dest.CustomerId, src => src.CustomerId)
             .Map(dest => dest.RequestedAmount, src => src.Amount)
@@ -58,15 +53,16 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.Months, src => src.Months)
             .Map(dest => dest.LoanType, src => src.LoanType)
             .Map(dest => dest.ApprovalDate, src => DateTime.UtcNow)
-            .Ignore(dest => dest.Status)
+            .Map(dest => dest.Status, src => "Approved")
             .Ignore(dest => dest.Customer)
             .Ignore(dest => dest.LoanRequest)
             .Ignore(dest => dest.Installments)
             .Ignore(dest => dest.Id);
 
-        // ApprovedLoan -> RejectLoanResponse
         config.NewConfig<ApprovedLoan, RejectLoanResponseDTO>()
+            .Map(dest => dest.LoanRequestId, src => src.Id)
             .Map(dest => dest.CustomerId, src => src.CustomerId)
+            .Map(dest => dest.RequestedAmount, src => src.RequestedAmount)
             .Map(dest => dest.RejectReason, src => src.RejectionReason);
 
         config.NewConfig<Installment, OverdueInstallmentDTO>()
@@ -79,5 +75,11 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.DueDate, src => src.DueDate.ToShortDateString())
             .Map(dest => dest.DaysLate, src => $"La cuota tiene {Math.Max(0, (DateTime.UtcNow.Date - src.DueDate.Date).Days)} días de atraso.")
             .Map(dest => dest.AmountPending, src => src.TotalAmount);
+
+        config.NewConfig<Installment, InstallmentResponseDTO>()
+            .Map(dest => dest.Id, src => src.Id)
+            .Map(dest => dest.DueDate, src => src.DueDate.ToShortDateString())
+            .Map(dest => dest.Status, src => src.Status)
+            .Map(dest => dest.TotalAmount, src => src.TotalAmount);
     }
 }

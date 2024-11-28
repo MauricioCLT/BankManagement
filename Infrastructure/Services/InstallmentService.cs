@@ -24,13 +24,7 @@ public class InstallmentService : IInstallmentService
             _ => await _installmentRepository.GetAllInstallmentsByLoanId(loanId),
         };
 
-        return installments.Select(x => new InstallmentResponseDTO
-        {
-            Id = x.Id,
-            DueDate = x.DueDate,
-            Status = x.Status,
-            TotalAmount = x.TotalAmount
-        }).ToList();
+        return installments.Adapt<List<InstallmentResponseDTO>>();
     }
 
     public async Task<List<OverdueInstallmentDTO>> GetOverdueInstallments()

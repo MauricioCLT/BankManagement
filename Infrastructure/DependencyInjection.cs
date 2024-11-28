@@ -1,4 +1,6 @@
-﻿using Core.DTOs.RequestLoan;
+﻿using Core.DTOs.ApproveLoan;
+using Core.DTOs.Payment;
+using Core.DTOs.RequestLoan;
 using Core.DTOs.SimulateLoan;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
@@ -112,8 +114,11 @@ public static class DependencyInjection
 
     private static IServiceCollection AddValidations(this IServiceCollection services)
     {
+        services.AddScoped<IValidator<ApproveLoanDTO>, ApproveLoanValidation>();
+        services.AddScoped<IValidator<LoanSimulateDTO>, LoanSimulateValidation>();
+        services.AddScoped<IValidator<PayInstallmentsRequestDTO>, PayInstallmentValidation>();
+        services.AddScoped<IValidator<RejectLoanDTO>, RejectLoanValidation>();
         services.AddScoped<IValidator<RequestLoanDTO>, RequestLoanValidation>();
-        services.AddScoped<IValidator<LoanSimulate>, LoanSimulateValidation>();
 
         return services;
     }
