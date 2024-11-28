@@ -13,6 +13,6 @@ public class PaymentDetailDTO
     public float InterestRate { get; set; }
     public int CompletePayments { get; set; }
     public int UncompletePayments { get; set; }
-    public DateTime? NextDueDate { get; set; }  // Próxima fecha de vencimiento
-    public string PaymentStatus { get; set; } = string.Empty;  // Mensaje si todas las cuotas están pagadas
+    public DateTime? NextDueDate { get; set; }
+    public string PaymentStatus { get; set; } = string.Empty;
 }

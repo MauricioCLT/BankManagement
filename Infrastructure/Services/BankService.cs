@@ -103,37 +103,7 @@ public class BankService : IBankService
         if (loanRequest == null)
             throw new Exception("No se encontró el préstamo solicitado");
 
-        var totalAmount = loanRequest.Amount + loanRequest.Amount * (decimal)loanRequest.TermInterestRate.Interest / 100;
-        var revenue = totalAmount - loanRequest.Amount;
-
-        var completePayments = loanRequest.ApprovedLoan.Installments
-            .Count(x => x.Status == "Complete" || x.Status == "Paid");
-
-        var uncompletePayments = loanRequest.ApprovedLoan.Installments
-            .Count(x => x.Status == "Pending");
-
-        var nextDueDate = loanRequest.ApprovedLoan?.Installments
-            .Where(x => x.Status == "Pending")
-            .OrderBy(x => x.DueDate)
-            .FirstOrDefault()?.DueDate
-            .ToShortDateString();
-
-        return new PaymentDetailResponseDTO
-        {
-            CustomerId = loanRequest.CustomerId,
-            CustomerName = $"{loanRequest.Customer.FirstName} {loanRequest.Customer.LastName}",
-            ApprovedDate = loanRequest.RequestDate.ToShortDateString(),
-            RequestedAmount = loanRequest.Amount,
-            TotalAmount = totalAmount,
-            Revenue = revenue,
-            Months = loanRequest.Months,
-            LoanType = loanRequest.LoanType,
-            InterestRate = loanRequest.TermInterestRate.Interest,
-            CompletePayments = completePayments,
-            UncompletePayments = uncompletePayments,
-            NextDueDate = nextDueDate ?? "No hay pagos pendientes",
-            PaymentStatus = nextDueDate == null ? "All payments completed" : "Pending payments"
-        };
+        return loanRequest.Adapt<PaymentDetailResponseDTO>();
     }
 
     public async Task<PayInstallmentsResponseDTO> PayInstallments(PayInstallmentsRequestDTO request)
@@ -174,58 +144,16 @@ public class BankService : IBankService
         await _loanPaymentRepository.SaveChangesAsync();
 
         var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status == "Pending");
+        var paidInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status == "Complete" || x.Status == "Paid");
 
         return new PayInstallmentsResponseDTO
         {
             LoanRequestId = loanRequest.Id,
-            PaidInstallments = installments.Count,
+            PaidInstallments = paidInstallmentsCount,
             RemainingInstallments = remainingInstallmentsCount,
             StatusMessage = remainingInstallmentsCount == 0 ? "Todas las cuotas fueron pagadas." : "Quedan cuotas pendientes."
         };
     }
-
-    //public async Task<PayInstallmentsResponseDTO> PayInstallments(PayInstallmentsRequestDTO request)
-    //{
-    //    if (request == null || !request.InstallmentIds.Any())
-    //        throw new Exception("No se especificaron cuotas para pagar.");
-
-    //    var loanRequest = await _loanPaymentRepository.GetLoanRequestByIdWithDetails(request.LoanRequestId);
-    //    if (loanRequest == null)
-    //        throw new Exception("No se encontró la solicitud de préstamo.");
-
-    //    var installments = await _loanPaymentRepository.GetPendingInstallments(loanRequest.ApprovedLoan.Id, request.InstallmentIds);
-    //    if (installments.Count != request.InstallmentIds.Count)
-    //        throw new Exception("Algunas cuotas ya fueron pagadas o no pertenecen al préstamo.");
-
-    //    var installmentPayment = new InstallmentPayment
-    //    {
-    //        Installments = installments,
-    //        PaymentDate = DateTime.UtcNow,
-    //        Status = "Complete",
-    //    };
-
-    //    foreach (var installment in installments)
-    //    {
-    //        installment.Status = "Complete";
-    //        _loanPaymentRepository.UpdateInstallment(installment);
-    //        installmentPayment.Installments.Add(installment);
-    //        installmentPayment.PaymentAmount += installment.PrincipalAmount + installment.InterestAmount;
-    //    }
-
-    //    await _loanPaymentRepository.AddInstallmentPayment(installmentPayment);
-
-    //    await _loanPaymentRepository.SaveChangesAsync();
-
-    //    var remainingInstallmentsCount = loanRequest.ApprovedLoan.Installments.Count(x => x.Status == "Pending");
-
-    //    return new PayInstallmentsResponseDTO
-    //    {
-    //        LoanRequestId = loanRequest.Id,
-    //        PaidInstallments = installments.Count,
-    //        RemainingInstallments = remainingInstallmentsCount,
-    //        StatusMessage = remainingInstallmentsCount == 0 ? "Todas las cuotas fueron pagadas." : "Quedan cuotas pendientes."
-    //    };
-    //}
 
     public List<Installment> CalculateInstallments(decimal amount, float interestRate, ushort months)
     {

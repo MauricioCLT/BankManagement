@@ -48,7 +48,7 @@ public class BankController : BaseApiController
         return Ok(await _bankService.CreateRequestLoan(requestLoan));
     }
 
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("Approve-Loan")]
     public async Task<IActionResult> ApproveLoan([FromBody] ApproveLoanDTO approveLoanDTO)
     {

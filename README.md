@@ -342,9 +342,5 @@ cd BankManagement && dotnet -c Release && dotnet run
 
 ---
 
-# Entidades de la Base de Datos
-
-![Imágen de las Entidades](./img/BankFixed.jpg)
-
 ## Diagrama Entidad Relación
 ![ER Diagram](./img/ERBankFixed.png)

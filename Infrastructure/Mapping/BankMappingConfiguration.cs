@@ -1,6 +1,7 @@
 ﻿using Core.DTOs.ApproveLoan;
 using Core.DTOs.Customer;
 using Core.DTOs.Installment;
+using Core.DTOs.Payment;
 using Core.DTOs.RequestLoan;
 using Core.Entities;
 using Mapster;
@@ -11,6 +12,21 @@ public class BankMappingConfiguration : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
+        config.NewConfig<LoanRequest, PaymentDetailResponseDTO>()
+            .Map(dest => dest.CustomerId, src => src.CustomerId)
+            .Map(dest => dest.CustomerName, src => $"{src.Customer.FirstName} {src.Customer.LastName}")
+            .Map(dest => dest.ApprovedDate, src => src.RequestDate.ToShortDateString())
+            .Map(dest => dest.RequestedAmount, src => src.Amount)
+            .Map(dest => dest.TotalAmount, src => src.Amount + src.Amount * (decimal)src.TermInterestRate.Interest / 100)
+            .Map(dest => dest.Revenue, src => (src.Amount * (decimal)src.TermInterestRate.Interest / 100))
+            .Map(dest => dest.Months, src => src.Months)
+            .Map(dest => dest.LoanType, src => src.LoanType)
+            .Map(dest => dest.InterestRate, src => src.TermInterestRate.Interest)
+            .Map(dest => dest.CompletePayments, src => src.ApprovedLoan.Installments.Count(x => x.Status == "Complete" || x.Status == "Paid"))
+            .Map(dest => dest.UncompletePayments, src => src.ApprovedLoan.Installments.Count(x => x.Status == "Pending"))
+            .Map(dest => dest.NextDueDate, src => GetNextDueDate(src.ApprovedLoan))
+            .Map(dest => dest.PaymentStatus, src => src.ApprovedLoan.Installments.Any(x => x.Status == "Pending") ? "Pending payments" : "All payments completed");
+
         config.NewConfig<LoanRequest, RequestLoanResponseDTO>()
             .Map(dest => dest.LoanType, src => src.LoanType)
             .Map(dest => dest.Months, src => src.Months)
@@ -81,5 +97,15 @@ public class BankMappingConfiguration : IRegister
             .Map(dest => dest.DueDate, src => src.DueDate.ToShortDateString())
             .Map(dest => dest.Status, src => src.Status)
             .Map(dest => dest.TotalAmount, src => src.TotalAmount);
+    }
+
+    public static string GetNextDueDate(ApprovedLoan approvedLoan)
+    {
+        var nextInstallment = approvedLoan?.Installments
+            .Where(x => x.Status == "Pending")
+            .OrderBy(x => x.DueDate)
+            .FirstOrDefault();
+
+        return nextInstallment?.DueDate.ToShortDateString() ?? "No hay pagos pendientes";
     }
 }
