@@ -2,6 +2,7 @@
 using Core.DTOs.Payment;
 using Core.DTOs.RequestLoan;
 using Core.Interfaces.Services;
+using FluentValidation;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,18 +11,40 @@ namespace BankManagement.Controllers;
 
 public class BankController : BaseApiController
 {
-    private readonly AplicationDbContext _context;
     private readonly IBankService _bankService;
+    private readonly IValidator<RequestLoanDTO> _validateRequestLoanDTO;
+    private readonly IValidator<ApproveLoanDTO> _validateApproveLoanDTO;
+    private readonly IValidator<RejectLoanDTO> _validateRejectLoanDTO;
+    private readonly IValidator<PayInstallmentsRequestDTO> _validatePayInstallmentDTO;
 
-    public BankController(AplicationDbContext context, IBankService bankService)
+    public BankController(
+        IBankService bankService,
+        IValidator<RequestLoanDTO> validateRequestLoanDTO,
+        IValidator<ApproveLoanDTO> validateApproveLoanDTO,
+        IValidator<RejectLoanDTO> validateRejectLoanDTO,
+        IValidator<PayInstallmentsRequestDTO> validatePayInstallmentDTO)
     {
-        _context = context;
         _bankService = bankService;
+        _validateRequestLoanDTO = validateRequestLoanDTO;
+        _validateApproveLoanDTO = validateApproveLoanDTO;
+        _validateRejectLoanDTO = validateRejectLoanDTO;
+        _validatePayInstallmentDTO = validatePayInstallmentDTO;
     }
 
     [HttpPost("Request-Loan")]
     public async Task<IActionResult> CreateRequestLoan([FromBody] RequestLoanDTO requestLoan)
     {
+        var result = await _validateRequestLoanDTO.ValidateAsync(requestLoan);
+        if (!result.IsValid) 
+        {
+            var errors = result.Errors.Select(x => new
+            {
+                x.PropertyName,
+                x.ErrorMessage
+            });
+            return BadRequest(errors);
+        }
+
         return Ok(await _bankService.CreateRequestLoan(requestLoan));
     }
 
@@ -29,6 +52,10 @@ public class BankController : BaseApiController
     [HttpPost("Approve-Loan")]
     public async Task<IActionResult> ApproveLoan([FromBody] ApproveLoanDTO approveLoanDTO)
     {
+        var result = await _validateApproveLoanDTO.ValidateAsync(approveLoanDTO);
+        if (!result.IsValid)
+            return BadRequest(result.Errors);
+
         return Ok(await _bankService.ApproveLoanRequest(approveLoanDTO));
     }
 
@@ -36,6 +63,10 @@ public class BankController : BaseApiController
     [HttpPost("Reject-Loan")]
     public async Task<IActionResult> RejectLoan([FromBody] RejectLoanDTO rejectLoanDTO)
     {
+        var result = await _validateRejectLoanDTO.ValidateAsync(rejectLoanDTO);
+        if (!result.IsValid) 
+            return BadRequest(result.Errors);
+
         return Ok(await _bankService.RejectLoanRequest(rejectLoanDTO));
     }
 
@@ -45,9 +76,13 @@ public class BankController : BaseApiController
         return Ok(await _bankService.GetLoanDetails(loanRequestId));
     }
 
-    [HttpPost("{loanRequestId}/Pay-Installment")]
-    public async Task<IActionResult> PayInstallment(PayInstallmentsRequestDTO request)
+    [HttpPost("Pay-Installment")]
+    public async Task<IActionResult> PayInstallment([FromBody] PayInstallmentsRequestDTO request)
     {
+        var result = await _validatePayInstallmentDTO.ValidateAsync(request);
+        if (!result.IsValid) 
+            return BadRequest(result.Errors);
+
         return Ok(await _bankService.PayInstallments(request));
     }
 }

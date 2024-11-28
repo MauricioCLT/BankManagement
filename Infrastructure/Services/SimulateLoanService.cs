@@ -13,7 +13,7 @@ public class SimulateLoanService : ISimulateLoanService
         _simulateLoanRepository = simulateLoanRepository;
     }
 
-    public async Task<LoanSimulateResponse> SimulateCredit(LoanSimulate loanSimulate)
+    public async Task<LoanSimulateResponse> SimulateCredit(LoanSimulateDTO loanSimulate)
     {
         if (loanSimulate.Amount <= 0)
             throw new Exception("El Monto debe ser Mayor a Cero");

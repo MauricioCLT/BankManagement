@@ -13,5 +13,5 @@ Plazo: Número de meses.
 
 public interface ISimulateLoanService
 {
-    public Task<LoanSimulateResponse> SimulateCredit(LoanSimulate loanSimulate);
+    public Task<LoanSimulateResponse> SimulateCredit(LoanSimulateDTO loanSimulate);
 }

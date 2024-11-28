@@ -15,14 +15,14 @@ public class RequestLoanValidation : AbstractValidator<RequestLoanDTO>
     public RequestLoanValidation()
     {
         RuleFor(x => x.AmountRequest)
-            .ExclusiveBetween(10000, 10000000);
+            .ExclusiveBetween(5000, 500000000).WithMessage("El monto debe tener un rango de 5.000 a 500.000.000");
 
         RuleFor(x => x.LoanType)
             .NotEmpty()
             .Must(type => ValidTypes.Contains(type))
-            .WithMessage(type => $"El tipo de prestamo {type} no es valido. Los tipos validos son: {string.Join(", ", ValidTypes)}.");
+            .WithMessage(type => $"El tipo de prestamo no es valido. Los tipos validos son: {string.Join(", ", ValidTypes)}.");
 
         RuleFor(x => x.CustomerId)
-            .GreaterThan(0);
+            .GreaterThan(0).WithMessage("El id no puede ser negativo.");
     }
 }

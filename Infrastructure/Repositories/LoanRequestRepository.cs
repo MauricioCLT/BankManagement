@@ -2,8 +2,10 @@
 using Core.DTOs.RequestLoan;
 using Core.Entities;
 using Core.Interfaces.Repositories;
+using Core.Request;
 using Infrastructure.Context;
 using Mapster;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -24,21 +26,10 @@ public class LoanRequestRepository : ILoanRequestRepository
             .FirstOrDefaultAsync(x => x.Id == loanRequestId);
     }
 
-    public async Task<RequestLoanResponseDTO> CreateRequestLoan(RequestLoanDTO requestLoanDTO)
+    public async Task<RequestLoanResponseDTO> CreateRequestLoan(LoanRequest loanRequest)
     {
-        var termInterestRate = await _context.TermInterestRates
-            .FirstOrDefaultAsync(x => x.Months == requestLoanDTO.Months);
-
-        if (termInterestRate == null)
-            throw new Exception($"No se encontró una tasa de interés para el plazo de {requestLoanDTO.Months} meses.");
-
-        var loanRequest = requestLoanDTO.Adapt<LoanRequest>();
-        loanRequest.TermInterestRateId = termInterestRate.Id;
-        loanRequest.RequestDate = DateTime.UtcNow;
-
         _context.LoanRequests.Add(loanRequest);
         await _context.SaveChangesAsync();
-
         return loanRequest.Adapt<RequestLoanResponseDTO>();
     }
 
@@ -48,5 +39,10 @@ public class LoanRequestRepository : ILoanRequestRepository
         await _context.SaveChangesAsync();
 
         return loanRequest;
+    }
+
+    public async Task<TermInterestRate> GetByMonths(ushort months)
+    {
+        return await _context.TermInterestRates.FirstOrDefaultAsync(x => x.Months == months);
     }
 }

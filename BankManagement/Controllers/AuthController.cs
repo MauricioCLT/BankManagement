@@ -10,7 +10,7 @@ public class AuthController(IJwtProvider jwtProvider) : BaseApiController
 
     [HttpGet("Generate-Token")]
     [AllowAnonymous]
-    public IActionResult GenerateToken([FromQuery] string id, string name, [FromQuery] IEnumerable<string> roles)
+    public IActionResult GenerateToken([FromQuery] IEnumerable<string> roles, [FromQuery] string id = "1", string name = "Administrator")
     {
         return Ok(_jwtProvider.GenerateToken(id, name, roles));
     }
