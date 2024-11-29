@@ -121,23 +121,24 @@ public class BankService : IBankService
 
         var installmentPayment = new InstallmentPayment
         {
-            Installments = installments,
             PaymentDate = DateTime.UtcNow,
             Status = "Complete",
+            Installments = new List<Installment>(),
         };
 
-        var completedInstallments = new List<Installment>();
+        decimal totalPaymentAmount = 0;
         foreach (var installment in installments)
         {
             installment.Status = "Complete";
-            completedInstallments.Add(installment);
-            installmentPayment.PaymentAmount += installment.PrincipalAmount + installment.InterestAmount;
+            totalPaymentAmount += installment.PrincipalAmount + installment.InterestAmount;
+            installmentPayment.Installments.Add(installment);
         }
 
-        foreach (var installment in completedInstallments)
+        installmentPayment.PaymentAmount = totalPaymentAmount;
+
+        foreach (var installment in installments)
         {
             _loanPaymentRepository.UpdateInstallment(installment);
-            installmentPayment.Installments.Add(installment);
         }
 
         await _loanPaymentRepository.AddInstallmentPayment(installmentPayment);
